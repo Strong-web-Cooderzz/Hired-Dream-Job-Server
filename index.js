@@ -27,6 +27,18 @@ const run = async()=>{
             const result = await jobsCollection.find({}).toArray();
             res.send(result)
         })
+        app.get('/jobs/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await jobsCollection.findOne(query);
+            res.send(result)
+        })
+        app.post('/jobs',async(req,res)=>{
+            const jobBody = req.body;
+            console.log(jobBody)
+            const result = await jobsCollection.insertOne(jobBody);
+            res.send(result)
+        })
 
 
     }
