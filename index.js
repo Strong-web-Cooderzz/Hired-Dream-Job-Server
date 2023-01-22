@@ -21,6 +21,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 const run = async()=>{
     try{
         const jobsCollection = client.db('hired-job').collection('jobs')
+        const usersCollection = client.db('hired-job').collection('users')
         
 
         app.get('/jobs',async(req,res)=>{
@@ -39,6 +40,49 @@ const run = async()=>{
             const result = await jobsCollection.insertOne(jobBody);
             res.send(result)
         })
+
+        app.get('/user',async(req,res)=>{
+            const email = req.query.email;
+            const query = {email: email}
+            const result = await usersCollection.findOne(query)
+            res.send(result)
+        })
+
+        app.post('/user',async(req,res)=>{
+            const userData = req.body;
+            const result = await usersCollection.insertOne(userData)
+            res.send(result)
+        })
+
+        app.put('/user/:id',async(req,res)=>{
+            const id = req.params.id;
+            const userData = req.body;
+            console.log(userData)
+            const filter = {_id: ObjectId(id)}
+            const option = {upsert: true}
+            const updateUser = {
+                $set: userData
+            }
+            const result = await usersCollection.updateOne(filter,updateUser,option)
+            res.send(result)
+        })
+
+        app.get('/employ',async(req,res)=>{
+            const employ = req.query.type;
+            const query = {type: employ}
+            console.log(employ)
+            const result = await usersCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.get('/employ/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await usersCollection.findOne(query)
+            res.send(result)
+        })
+
+
 
 
     }
