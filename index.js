@@ -91,6 +91,14 @@ const run = async()=>{
 			res.send(result);
 		});
 
+		app.get('/find-employer', async(req, res) => {
+			const search = req.query.search;
+			const location = req.query.location;
+			const searchRe = new RegExp(`.*${search}.*`, 'gi');
+			const locationRe = new RegExp(`.*${location}.*`, 'gi');
+			const result = await usersCollection.find({"fullName": searchRe, "address": locationRe}).toArray();
+			res.send(result);
+		});
 
 
     }
