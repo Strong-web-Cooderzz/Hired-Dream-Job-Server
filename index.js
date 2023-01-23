@@ -82,6 +82,12 @@ const run = async()=>{
             res.send(result)
         })
 
+		app.get('/find-jobs', async(req, res) => {
+			const search = req.query.search;
+			const re = new RegExp(`.*${search}.*`, 'gi');
+			const result = await jobsCollection.find({"title": re}).toArray();
+			res.send(result);
+		});
 
 
 
