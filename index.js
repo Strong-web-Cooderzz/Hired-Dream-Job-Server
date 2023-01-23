@@ -87,7 +87,13 @@ const run = async()=>{
 			const location = req.query.location;
 			const searchRe = new RegExp(`.*${search}.*`, 'gi');
 			const locationRe = new RegExp(`.*${location}.*`, 'gi');
-			const result = await jobsCollection.find({"title": searchRe, "location": locationRe}).toArray();
+			let newest = '';
+			if (req.query.sort === 'new' || req.query.sort == '') {
+				newest = -1;				
+			} else {
+				newest = 1;
+			}
+			const result = await jobsCollection.find({"title": searchRe, "location": locationRe}).sort({postTime: newest}).toArray();
 			res.send(result);
 		});
 
