@@ -85,15 +85,24 @@ const run = async()=>{
 		app.get('/find-jobs', async(req, res) => {
 			const search = req.query.search;
 			const location = req.query.location;
+			let jobType;
+			if(req.query.type) {
+				jobType = req.query.type;
+			} else {
+				// selects everything using regex;
+				jobType = new RegExp(`.*`, 'gi');
+			}
+			// checks if search and location exists using regex
 			const searchRe = new RegExp(`.*${search}.*`, 'gi');
 			const locationRe = new RegExp(`.*${location}.*`, 'gi');
-			let newest = '';
+			let newest;
 			if (req.query.sort === 'new' || req.query.sort == '') {
+				// -1 returns desecndeing
 				newest = -1;				
 			} else {
 				newest = 1;
 			}
-			const result = await jobsCollection.find({"title": searchRe, "location": locationRe}).sort({postTime: newest}).toArray();
+			const result = await jobsCollection.find({"title": searchRe, "location": locationRe, "jobType": jobType}).sort({"postTime": newest}).toArray();
 			res.send(result);
 		});
 
