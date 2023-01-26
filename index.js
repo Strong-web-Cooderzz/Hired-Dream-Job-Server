@@ -97,6 +97,23 @@ const run = async()=>{
         })
 
 
+        // Candidate All 
+        app.get('/candidate',async(req,res)=>{
+            const candidate = req.query.type;
+            const query = {type: candidate}
+            console.log(candidate)
+            const result = await usersCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.get('/candidate/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await usersCollection.findOne(query)
+            res.send(result)
+        })
+
+
 
 		app.get('/find-jobs', async(req, res) => {
 			const search = req.query.search;
