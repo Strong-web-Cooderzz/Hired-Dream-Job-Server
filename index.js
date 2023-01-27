@@ -120,7 +120,11 @@ const run = async()=>{
 			const location = req.query.location;
 			let jobType;
 			if(req.query.type) {
-				jobType = req.query.type;
+				if(req.query.type === 'all') {
+					jobType = new RegExp(`.*`, 'gi');
+				} else {
+					jobType = req.query.type;
+				}
 			} else {
 				// selects everything using regex;
 				jobType = new RegExp(`.*`, 'gi');
@@ -135,7 +139,31 @@ const run = async()=>{
 			} else {
 				newest = 1;
 			}
-			const result = await jobsCollection.find({"title": searchRe, "location": locationRe, "jobType": jobType}).sort({"postTime": newest}).toArray();
+
+			// requires to use UNIX timestamp
+			const second = 1000;
+			const minute = 60 * second;
+			const hour = 60 * minute;
+			const day = 24 * hour;
+			const now = new Date().getTime();
+			const datePosted = parseInt(req.query.time);
+			let time;
+			if (datePosted === 0) {
+				time = 0;
+			} else if (datePosted === hour) {
+				time = now - hour;
+			} else if (datePosted === day) {
+				time = now - day;
+			} else if (datePosted === 7 * day) {
+				time = now - (7 * day);
+			} else if (datePosted === 14 * day) {
+				time = now - (14 * day);
+			} else if (datePosted === 30 * day) {
+				time = now - (30 * day);
+			} else {
+				time = 0;
+			}
+			const result = await jobsCollection.find({"title": searchRe, "location": locationRe, "jobType": jobType, "postTime": {"$gte": new Date(time)}}).sort({"postTime": newest}).toArray();
 			res.send(result);
 		});
 
