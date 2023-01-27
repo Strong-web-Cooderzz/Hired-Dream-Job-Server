@@ -20,10 +20,14 @@ const uri = 'mongodb+srv://DreamUser:7LKaa1qZ3Gh9BYS9@cluster0.b5doc61.mongodb.n
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const run = async()=>{
     try{
+        //================= Database all collection part ====================//
         const jobsCollection = client.db('hired-job').collection('jobs')
         const usersCollection = client.db('hired-job').collection('users')
+        const applyJobCollection = client.db('hired-job').collection('applyjobs')
         
 
+
+    //---------------- Jobs part start here ---------------------//
         app.get('/jobs',async(req,res)=>{
             const result = await jobsCollection.find({}).toArray();
             res.send(result)
@@ -41,6 +45,58 @@ const run = async()=>{
             res.send(result)
         })
 
+        // ------find job ------
+		app.get('/find-jobs', async(req, res) => {
+			const search = req.query.search;
+			const location = req.query.location;
+			let jobType;
+			if(req.query.type) {
+				jobType = req.query.type;
+			} else {
+				// selects everything using regex;
+				jobType = new RegExp(`.*`, 'gi');
+			}
+			// checks if search and location exists using regex
+			const searchRe = new RegExp(`.*${search}.*`, 'gi');
+			const locationRe = new RegExp(`.*${location}.*`, 'gi');
+			let newest;
+			if (req.query.sort === 'new' || req.query.sort == '') {
+				// -1 returns desecndeing
+				newest = -1;				
+			} else {
+				newest = 1;
+			}
+			const result = await jobsCollection.find({"title": searchRe, "location": locationRe, "jobType": jobType}).sort({"postTime": newest}).toArray();
+			res.send(result);
+		});
+       
+
+        // ------apply job section ---------\\
+        app.post('/candidate/applyjobs', async(req,res ) => {
+            const jobReq = req.body ;
+            console.log(jobReq)
+            const saveJobApply = await applyJobCollection.insertOne(jobReq);
+            res.send(saveJobApply)
+        })
+
+
+    // -------- my all job applied post ---------\\
+    app.get('/job-applied-post/:id', async(req, res) => {
+     const id = req.params.id ;
+     const query = {candidateId:id}
+     const appliedJobPost = await applyJobCollection.find(query).toArray()
+     res.send(appliedJobPost)
+
+    })
+
+    //---------------- Jobs part end here ---------------------//
+
+
+
+
+
+
+    // ----------------user part start here------------------------// 
         app.get('/user',async(req,res)=>{
             const email = req.query.email;
             const query = {email: email}
@@ -67,6 +123,12 @@ const run = async()=>{
             res.send(result)
         })
 
+
+    // ----------------user part end here------------------------// 
+
+
+  //------------------- Employer part start here -------------------//
+  
         app.get('/employ',async(req,res)=>{
             const employ = req.query.type;
             const query = {type: employ}
@@ -82,29 +144,6 @@ const run = async()=>{
             res.send(result)
         })
 
-		app.get('/find-jobs', async(req, res) => {
-			const search = req.query.search;
-			const location = req.query.location;
-			let jobType;
-			if(req.query.type) {
-				jobType = req.query.type;
-			} else {
-				// selects everything using regex;
-				jobType = new RegExp(`.*`, 'gi');
-			}
-			// checks if search and location exists using regex
-			const searchRe = new RegExp(`.*${search}.*`, 'gi');
-			const locationRe = new RegExp(`.*${location}.*`, 'gi');
-			let newest;
-			if (req.query.sort === 'new' || req.query.sort == '') {
-				// -1 returns desecndeing
-				newest = -1;				
-			} else {
-				newest = 1;
-			}
-			const result = await jobsCollection.find({"title": searchRe, "location": locationRe, "jobType": jobType}).sort({"postTime": newest}).toArray();
-			res.send(result);
-		});
 
 		app.get('/find-employer', async(req, res) => {
 			const search = req.query.search;
@@ -114,6 +153,7 @@ const run = async()=>{
 			const result = await usersCollection.find({"fullName": searchRe, "address": locationRe}).toArray();
 			res.send(result);
 		});
+//------------------- Employer part end  here -------------------//
 
 
     }
