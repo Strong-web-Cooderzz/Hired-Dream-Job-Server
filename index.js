@@ -113,7 +113,7 @@ const run = async()=>{
         app.put('/user/:id',async(req,res)=>{
             const id = req.params.id;
             const userData = req.body;
-            console.log(userData)
+            console.log(id)
             const filter = {_id: ObjectId(id)}
             const option = {upsert: true}
             const updateUser = {
@@ -175,6 +175,19 @@ const run = async()=>{
             res.send(result)
         })
 
+        // Candidate Profile Update
+        app.put('/candidate',async(req,res)=>{
+            const email = req.query.email;
+            const updateData = req.body;
+            console.log(updateData,email)
+            const filter = {email: email}
+            const option = {upsert: true}
+            const userData = {
+                $set:  updateData
+            }
+            const result = await usersCollection.updateOne(filter,userData,option)
+            res.send(result)
+        })
 
 
 		app.get('/find-jobs', async(req, res) => {
