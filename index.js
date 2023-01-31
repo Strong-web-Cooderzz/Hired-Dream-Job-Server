@@ -54,6 +54,9 @@ const run = async()=>{
         // Post job
         app.post('/jobs',async(req,res)=>{
             const jobBody = req.body;
+
+			const date = new Date();
+			jobBody.postTime = date;
             const result = await jobsCollection.insertOne(jobBody);
             res.send(result)
         })
@@ -228,11 +231,12 @@ const run = async()=>{
 
 
 		app.get('/find-jobs', async(req, res) => {
+			const query = req.query;
 			const search = req.query.search;
 			const location = req.query.location;
 			let jobType;
-			if(req.query.type) {
-				if(req.query.type === 'all') {
+			if(query.type) {
+				if(query.type === 'all') {
 					jobType = new RegExp(`.*`, 'gi');
 				} else {
 					jobType = req.query.type;
@@ -245,7 +249,7 @@ const run = async()=>{
 			const searchRe = new RegExp(`.*${search}.*`, 'gi');
 			const locationRe = new RegExp(`.*${location}.*`, 'gi');
 			let newest;
-			if (req.query.sort === 'new' || req.query.sort == '') {
+			if (query.sort === 'new' || query.sort == '') {
 				// -1 returns desecndeing
 				newest = -1;				
 			} else {
@@ -258,7 +262,7 @@ const run = async()=>{
 			const hour = 60 * minute;
 			const day = 24 * hour;
 			const now = new Date().getTime();
-			const datePosted = parseInt(req.query.time);
+			const datePosted = parseInt(query.time);
 			let time;
 			if (datePosted === 0) {
 				time = 0;
@@ -275,7 +279,17 @@ const run = async()=>{
 			} else {
 				time = 0;
 			}
-			const result = await jobsCollection.find({"title": searchRe, "location": locationRe, "jobType": jobType, "postTime": {"$gte": new Date(time)}}).sort({"postTime": newest}).toArray();
+			const perPage = parseInt(query["per-page"]);
+			const pageNumber = parseInt(query.page);
+			console.log(pageNumber)
+			const result = await jobsCollection.find({
+				"title": searchRe, 
+				"location": locationRe, 
+				"jobType": jobType, 
+				"postTime": {"$gte": new Date(time)}
+				}).sort({
+					"postTime": newest
+				}).limit(perPage).skip((pageNumber - 1) * perPage).toArray();
 			res.send(result);
 		});
 
