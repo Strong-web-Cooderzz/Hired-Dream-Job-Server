@@ -68,10 +68,24 @@ const run = async()=>{
             const body = req.body.isVisible;
             const filter = {_id: ObjectId(id)}
             const option = {upsert: true}
-             const updateUser = {
+             const updateJob = {
                 $set: {isVisible: body}
             }
-             const result = await jobsCollection.updateOne(filter,updateUser,option)
+             const result = await jobsCollection.updateOne(filter,updateJob,option)
+            res.send(result)
+        })
+
+        // JOb Update
+
+        app.patch('/jobsUpdate/:id',async(req,res)=>{
+           const id = req.params.id
+            const body = req.body;
+            const filter = {_id: ObjectId(id)}
+            const option = {upsert: true}
+             const updateJob = {
+                $set: body
+            }
+             const result = await jobsCollection.updateOne(filter,updateJob,option)
             res.send(result)
         })
 
