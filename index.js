@@ -10,8 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/',(req,res)=>{
-    res.send('Hello Jobs')
-})
+    res.sendStatus(200);
+});
 
 
 
@@ -135,7 +135,7 @@ const run = async()=>{
 			}
 			const perPage = parseInt(query["per-page"]);
 			const pageNumber = parseInt(query.page);
-			console.log(pageNumber)
+			// console.log(pageNumber)
 			const result = await jobsCollection.find({
 				"title": searchRe, 
 				"location": locationRe, 
