@@ -218,6 +218,19 @@ const run = async()=>{
 			res.send(result);
 		});
 //------------------- Employer part end  here -------------------//
+        app.put('/employ',async(req,res)=>{
+            const email = req.query.email;
+            const updateData = req.body;
+            console.log(updateData,email)
+            const filter = {email: email}
+            const option = {upsert: true}
+            const userData = {
+                $set:  updateData
+            }
+            const result = await usersCollection.updateOne(filter,userData,option)
+            res.send(result)
+        })
+
 
 
 
