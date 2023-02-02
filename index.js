@@ -292,6 +292,12 @@ const run = async()=>{
 			const result = await usersCollection.find({"fullName": searchRe, "address": locationRe}).toArray();
 			res.send(result);
 		});
+
+		// sends all user to admin dashboard
+		app.get('/api/v1/get/users/', async (req, res) => {
+			const result = await usersCollection.find().toArray();
+			res.json(result);
+		});
 //------------------- Employer part end  here -------------------//
 
 
