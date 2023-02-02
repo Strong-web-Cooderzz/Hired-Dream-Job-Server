@@ -295,7 +295,15 @@ const run = async()=>{
 
 		// sends all user to admin dashboard
 		app.get('/api/v1/get/users/', async (req, res) => {
-			const result = await usersCollection.find().toArray();
+			let userType = req.query.type;
+			if(userType === 'candidates') {
+				userType = 'Candidate';
+			} else if (userType === 'employers') {
+				userType = 'Agency';
+			} else {
+				userType = '';
+			}
+			const result = await usersCollection.find({"type": userType}).toArray();
 			res.json(result);
 		});
 //------------------- Employer part end  here -------------------//
