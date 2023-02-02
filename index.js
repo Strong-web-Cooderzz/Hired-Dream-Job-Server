@@ -83,35 +83,7 @@ const run = async()=>{
             const result = await jobsCollection.deleteOne(filter)
             res.send(result)
         })
-
          
-
-        // ------find job ------
-		app.get('/find-jobs', async(req, res) => {
-			const search = req.query.search;
-			const location = req.query.location;
-			let jobType;
-			if(req.query.type) {
-				jobType = req.query.type;
-			} else {
-				// selects everything using regex;
-				jobType = new RegExp(`.*`, 'gi');
-			}
-			// checks if search and location exists using regex
-			const searchRe = new RegExp(`.*${search}.*`, 'gi');
-			const locationRe = new RegExp(`.*${location}.*`, 'gi');
-			let newest;
-			if (req.query.sort === 'new' || req.query.sort == '') {
-				// -1 returns desecndeing
-				newest = -1;				
-			} else {
-				newest = 1;
-			}
-			const result = await jobsCollection.find({"title": searchRe, "location": locationRe, "jobType": jobType}).sort({"postTime": newest}).toArray();
-			res.send(result);
-		});
-       
-
         // ------apply job section ---------\\
         app.post('/candidate/applyjobs', async(req,res ) => {
             const jobReq = req.body ;
@@ -281,12 +253,16 @@ const run = async()=>{
 			}
 			const perPage = parseInt(query["per-page"]);
 			const pageNumber = parseInt(query.page);
-			// console.log(pageNumber)
+			let category = query.category;
+			if (category === '') {
+				category =  new RegExp(`.*`, 'gi');
+			}
 			const result = await jobsCollection.find({
 				"title": searchRe, 
 				"location": locationRe, 
 				"jobType": jobType, 
-				"postTime": {"$gte": new Date(time)}
+				"postTime": {"$gte": new Date(time)},
+				category
 				}).sort({
 					"postTime": newest
 				}).limit(perPage).skip((pageNumber - 1) * perPage).toArray();
