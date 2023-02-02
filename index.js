@@ -2,6 +2,7 @@ const express = require('express')
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors')
+const stripe = require("stripe")('sk_test_51M6FsBLZ3fbZi8VUMpanZHl2iofYhhfuaS0rf480kvRvJOAd1IX2hi0RfEYWL5cnkosFLUUVR2a3DuuQd8BAL1tV007WmiFBlu');
 
 
 require('dotenv').config();
@@ -68,10 +69,24 @@ const run = async()=>{
             const body = req.body.isVisible;
             const filter = {_id: ObjectId(id)}
             const option = {upsert: true}
-             const updateUser = {
+             const updateJob = {
                 $set: {isVisible: body}
             }
-             const result = await jobsCollection.updateOne(filter,updateUser,option)
+             const result = await jobsCollection.updateOne(filter,updateJob,option)
+            res.send(result)
+        })
+
+        // JOb Update
+
+        app.patch('/jobsUpdate/:id',async(req,res)=>{
+           const id = req.params.id
+            const body = req.body;
+            const filter = {_id: ObjectId(id)}
+            const option = {upsert: true}
+             const updateJob = {
+                $set: body
+            }
+             const result = await jobsCollection.updateOne(filter,updateJob,option)
             res.send(result)
         })
 
@@ -280,7 +295,22 @@ const run = async()=>{
 //------------------- Employer part end  here -------------------//
 
 
-
+        // --------------------- Payment -----------------------//
+        app.post('/create-payment-intent',async(req,res)=>{
+            const jobManage = req.body;
+            const price = jobManage.price;
+            const ammount = price * 100;
+            const paymentIntent  = await stripe.paymentIntents.create({
+                currency: 'usd',
+                ammount:ammount,
+                'payment_method_types':[
+                    'card'
+                ]
+            })
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            })
+        })
 
     }
     finally{}
