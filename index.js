@@ -32,6 +32,15 @@ const run = async()=>{
             const result = await jobsCollection.find({}).toArray();
             res.send(result)
         })
+            //  job find by email
+        app.get('/jobsFindByEmail',async(req,res)=>{
+            const email = req.query.email;
+            const filter = {jobEmail:email}
+            const result = await jobsCollection.find(filter).toArray();
+            res.send(result)
+        })
+
+        // Job find by id
 
         app.get('/jobs/:id',async(req,res)=>{
             const id = req.params.id;
@@ -41,6 +50,8 @@ const run = async()=>{
             res.send(result)
         })
 
+
+        // Post job
         app.post('/jobs',async(req,res)=>{
             const jobBody = req.body;
 			const date = new Date();
@@ -51,6 +62,8 @@ const run = async()=>{
             res.send(result)
         })
 
+        // JOb Visibility Update
+
         app.patch('/jobs/:id',async(req,res)=>{
            const id = req.params.id
             const body = req.body.isVisible;
@@ -60,6 +73,15 @@ const run = async()=>{
                 $set: {isVisible: body}
             }
              const result = await jobsCollection.updateOne(filter,updateUser,option)
+            res.send(result)
+        })
+
+        // Delete
+
+        app.delete('/deleteJob/:id',async(req,res)=>{
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)}
+            const result = await jobsCollection.deleteOne(filter)
             res.send(result)
         })
 
@@ -94,7 +116,6 @@ const run = async()=>{
         // ------apply job section ---------\\
         app.post('/candidate/applyjobs', async(req,res ) => {
             const jobReq = req.body ;
-            console.log(jobReq)
             const saveJobApply = await applyJobCollection.insertOne(jobReq);
             res.send(saveJobApply)
         })  
