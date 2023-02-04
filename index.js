@@ -100,11 +100,13 @@ const run = async()=>{
         })
          
         // ------apply job section ---------\\
-        app.post('/candidate/applyjobs', async(req,res ) => {
-            const jobReq = req.body ;
-            const saveJobApply = await applyJobCollection.insertOne(jobReq);
-            res.send(saveJobApply)
-        })  
+		app.post('/candidate/applyjobs', async(req,res ) => {
+			const jobReq = req.body;
+			// converts base64 string to binary
+			jobReq.candidateResume = Buffer.from(jobReq.candidateResume, 'base64');
+			const saveJobApply = await applyJobCollection.insertOne(jobReq);
+			res.send(saveJobApply)
+		})  
 
 
     // -------- my all job applied post ---------\\
