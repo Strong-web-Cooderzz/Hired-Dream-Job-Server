@@ -29,10 +29,16 @@ const run = async()=>{
 
 
     //---------------- Jobs part start here ---------------------//
-        app.get('/jobs',async(req,res)=>{
-            const result = await jobsCollection.find({}).toArray();
-            res.send(result)
-        })
+		app.get('/jobs',async(req,res)=>{
+			const limit = req.query.limit;
+			if (limit) {
+				const result = await jobsCollection.find({}).limit(limit).toArray();
+				res.send(result)
+			} else {
+				const result = await jobsCollection.find({}).toArray();
+				res.send(result)
+			}
+		})
             //  job find by email
         app.get('/jobsFindByEmail',async(req,res)=>{
             const email = req.query.email;
