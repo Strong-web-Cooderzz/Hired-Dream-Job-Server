@@ -48,7 +48,7 @@ const run = async () => {
 
     //---------------- Jobs part start here ---------------------//
 		app.get('/jobs',async(req,res)=>{
-			const limit = req.query.limit;
+			const limit = Number(req.query.limit);
 			if (limit) {
 				const result = await jobsCollection.find({}).limit(limit).toArray();
 				res.send(result)
