@@ -268,7 +268,7 @@ const run = async()=>{
 			} else {
 				time = 0;
 			}
-			const perPage = parseInt(query["per-page"]);
+			const perPage = Number(query["per-page"]);
 			const pageNumber = parseInt(query.page);
 			let category = query.category;
 			if (category === '') {
@@ -279,6 +279,7 @@ const run = async()=>{
 				"location": locationRe, 
 				"jobType": jobType, 
 				"postTime": {"$gte": new Date(time)},
+				"isVisible": true,
 				category
 				}).sort({
 					"postTime": newest
