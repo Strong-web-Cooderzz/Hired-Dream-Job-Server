@@ -434,10 +434,6 @@ run().catch((err) => {
             })
         })
 
-    }
-    finally{}
-}
-
 run().catch(err=>{
     console.error(err);
 })
