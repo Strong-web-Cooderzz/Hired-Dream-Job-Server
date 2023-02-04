@@ -4,7 +4,7 @@ const port = process.env.PORT || 5000;
 const cors = require("cors");
 const stripe = require("stripe")("sk_test_51M6FsBLZ3fbZi8VUMpanZHl2iofYhhfuaS0rf480kvRvJOAd1IX2hi0RfEYWL5cnkosFLUUVR2a3DuuQd8BAL1tV007WmiFBlu");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const {jobsCollection, usersCollection, applyJobCollection, featuredJobCollection} = require('./services');
 
 // middleware
 app.use(cors());
@@ -14,18 +14,7 @@ app.get('/', (req, res) => {
 	res.sendStatus(200);
 });
 
-const uri = "mongodb+srv://DreamUser:7LKaa1qZ3Gh9BYS9@cluster0.b5doc61.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-	serverApi: ServerApiVersion.v1,
-});
 
-//================= Database all collection part ====================//
-const jobsCollection = client.db("hired-job").collection("jobs");
-const usersCollection = client.db("hired-job").collection("users");
-const applyJobCollection = client.db("hired-job").collection("applyjobs");
-const featuredJobCollection = client.db("hired-job").collection("featuredJob");
 
 //---------------- Jobs part start here ---------------------//
 app.get('/jobs', async (req, res) => {
