@@ -98,6 +98,8 @@ exports.searchJobs = async (req, res) => {
 	}
 	// checks if search and location exists using regex
 	const searchRe = new RegExp(`.*${search}.*`, 'gi');
+	const desRe = new RegExp(`.*${search}.*`, 'gi');
+	const companyRe = new RegExp(`.*${search}.*`, 'gi');
 	const locationRe = new RegExp(`.*${location}.*`, 'gi');
 	let newest;
 	if (query.sort === 'new' || query.sort == '') {
@@ -137,7 +139,7 @@ exports.searchJobs = async (req, res) => {
 		category = new RegExp(`.*`, 'gi');
 	}
 	const result = await jobsCollection.find({
-		"title": searchRe,
+		$or: [{"title": searchRe}, {"jobDescription": desRe}, {"company": companyRe}],
 		"location": locationRe,
 		"jobType": jobType,
 		"postTime": { "$gte": new Date(time) },
