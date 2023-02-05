@@ -1,4 +1,4 @@
-const { usersCollection } = require('../models/mongodb.model');
+const { usersCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.getUserByEmail = async (req, res) => {
 	const email = req.query.email;

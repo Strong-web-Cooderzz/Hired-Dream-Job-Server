@@ -13,4 +13,4 @@ const usersCollection = client.db("hired-job").collection("users");
 const applyJobCollection = client.db("hired-job").collection("applyjobs");
 const featuredJobCollection = client.db("hired-job").collection("featuredJob");
 
-module.exports = {jobsCollection, usersCollection, applyJobCollection, featuredJobCollection};
+module.exports = { jobsCollection, usersCollection, applyJobCollection, featuredJobCollection, ObjectId };

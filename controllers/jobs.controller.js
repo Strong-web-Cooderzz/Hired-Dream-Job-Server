@@ -1,6 +1,4 @@
-const { jobsCollection } = require('../models/mongodb.model');
-const { applyJobCollection } = require('../models/mongodb.model');
-const { featuredJobCollection } = require('../models/mongodb.model');
+const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.getAllJobs = async (req, res) => {
 	const limit = Number(req.query.limit);
