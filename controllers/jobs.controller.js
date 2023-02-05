@@ -11,6 +11,11 @@ exports.getAllJobs = async (req, res) => {
 	}
 };
 
+exports.jobCounter = async (_, res) => {
+	const result= await jobsCollection.countDocuments();
+	res.send(result.toString());
+}
+
 exports.getFeaturedJobs = async (req, res) => {
 	const result = await featuredJobCollection.find({}).limit(6).toArray();
 	res.send(result);
