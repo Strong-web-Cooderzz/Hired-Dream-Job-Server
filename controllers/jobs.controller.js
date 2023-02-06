@@ -1,6 +1,4 @@
-const { jobsCollection } = require('../models/mongodb.model');
-const { applyJobCollection } = require('../models/mongodb.model');
-const { featuredJobCollection } = require('../models/mongodb.model');
+const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.getAllJobs = async (req, res) => {
 	const limit = Number(req.query.limit);
@@ -12,6 +10,11 @@ exports.getAllJobs = async (req, res) => {
 		res.send(result)
 	}
 };
+
+exports.jobCounter = async (_, res) => {
+	const result= await jobsCollection.countDocuments();
+	res.send(result.toString());
+}
 
 exports.getFeaturedJobs = async (req, res) => {
 	const result = await featuredJobCollection.find({}).limit(6).toArray();
@@ -95,6 +98,8 @@ exports.searchJobs = async (req, res) => {
 	}
 	// checks if search and location exists using regex
 	const searchRe = new RegExp(`.*${search}.*`, 'gi');
+	const desRe = new RegExp(`.*${search}.*`, 'gi');
+	const companyRe = new RegExp(`.*${search}.*`, 'gi');
 	const locationRe = new RegExp(`.*${location}.*`, 'gi');
 	let newest;
 	if (query.sort === 'new' || query.sort == '') {
@@ -134,7 +139,7 @@ exports.searchJobs = async (req, res) => {
 		category = new RegExp(`.*`, 'gi');
 	}
 	const result = await jobsCollection.find({
-		"title": searchRe,
+		$or: [{"title": searchRe}, {"jobDescription": desRe}, {"company": companyRe}],
 		"location": locationRe,
 		"jobType": jobType,
 		"postTime": { "$gte": new Date(time) },

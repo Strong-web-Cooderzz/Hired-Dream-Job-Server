@@ -1,4 +1,4 @@
-const { usersCollection } = require('../models/mongodb.model');
+const { usersCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.getEmployersByType = async (req, res) => {
 	const employ = req.query.type;
