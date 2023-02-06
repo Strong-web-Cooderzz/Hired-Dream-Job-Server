@@ -12,5 +12,8 @@ const jobsCollection = client.db("hired-job").collection("jobs");
 const usersCollection = client.db("hired-job").collection("users");
 const applyJobCollection = client.db("hired-job").collection("applyjobs");
 const featuredJobCollection = client.db("hired-job").collection("featuredJob");
+const categoriesCollection = client.db("hired-job").collection("blogCategories");
+const tagsCollection = client.db("hired-job").collection("blogTags");
+const postsCollection = client.db("hired-job").collection("blogPosts");
 
-module.exports = { jobsCollection, usersCollection, applyJobCollection, featuredJobCollection, ObjectId };
+module.exports = {jobsCollection,ObjectId,categoriesCollection,tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection};
