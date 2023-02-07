@@ -116,6 +116,15 @@ const run = async()=>{
 
     })
 
+
+    // find all applied candidates who is applied for my 
+    app.get('/get_applied_candidate/:email', async(req, res) => {
+        const email = req.params.email ;
+        const query = {companyEmail:email}
+        const appliedCandidate = await applyJobCollection.find(query).toArray()
+        res.send(appliedCandidate)
+    })
+
     //---------------- Jobs part end here ---------------------//
 
 
