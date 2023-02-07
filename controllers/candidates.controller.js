@@ -1,5 +1,4 @@
 
-const { ObjectId } = require('mongodb');
 const { usersCollection, applyJobCollection, ObjectId } = require('../models/mongodb.model');
 
 
