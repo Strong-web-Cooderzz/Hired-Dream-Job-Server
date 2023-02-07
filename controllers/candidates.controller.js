@@ -36,3 +36,10 @@ exports.applyToJob = async (req, res) => {
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	res.send(saveJobApply)
 };
+
+exports.getAppliedCandidateByEmail =  async(req, res) => {
+	const email = req.params.email ;
+	const query = {companyEmail:email}
+	const appliedCandidate = await applyJobCollection.find(query).toArray()
+	res.send(appliedCandidate)
+}

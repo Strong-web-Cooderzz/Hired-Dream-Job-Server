@@ -1,5 +1,4 @@
-const { ObjectId } = require('mongodb');
-const { postsCollection } = require('../models/mongodb.model');
+const { postsCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.blogPosts = async (req, res) => {
 	const result = await postsCollection.find({}).toArray();
