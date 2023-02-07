@@ -1,17 +1,36 @@
-const express = require('express')
+const express = require("express");
 const app = express();
+const cors = require("cors");
+require("dotenv").config();
+
 const port = process.env.PORT || 5000;
-const cors = require('cors')
-const stripe = require("stripe")('sk_test_51M6FsBLZ3fbZi8VUMpanZHl2iofYhhfuaS0rf480kvRvJOAd1IX2hi0RfEYWL5cnkosFLUUVR2a3DuuQd8BAL1tV007WmiFBlu');
 
+// importing routes
+const candidatesRouter = require('./routes/candidates.route');
+const employersRouter = require('./routes/employers.route');
+const jobsRouter = require('./routes/jobs.route');
+const paymentsRouter = require('./routes/payments.route');
+const usersRouter = require('./routes/users.route');
+const categoryRouter = require('./routes/blogCategory.route');
+const tagsRouter = require('./routes/tags.route');
+const postRoute = require('./routes/blogPosts.route');
 
-require('dotenv').config();
-
+// middleware
 app.use(cors());
 app.use(express.json());
 
-app.get('/',(req,res)=>{
-    res.sendStatus(200);
+// using route
+app.use(candidatesRouter);
+app.use(employersRouter);
+app.use(jobsRouter);
+app.use(paymentsRouter);
+app.use(categoryRouter);
+app.use(usersRouter);
+app.use(tagsRouter);
+app.use(postRoute);
+
+app.get('/', (_, res) => {
+	res.sendStatus(200);
 });
 
 
