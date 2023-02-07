@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getAllCandidate, getCandidateById, updateCandidateProfile, applyToJob } = require('../controllers/candidates.controller');
+const { getAllCandidate, getCandidateById, updateCandidateProfile, applyToJob, getAppliedCandidateByEmail } = require('../controllers/candidates.controller');
 
 // get all candidates
 router.get("/candidate", getAllCandidate);
@@ -12,5 +12,8 @@ router.put("/candidate", updateCandidateProfile);
 
 // ------apply job section ---------\\
 router.post('/candidate/applyjobs', applyToJob);
+
+// find all applied candidates who is applied for my 
+router.get('/get_applied_candidate/:email', getAppliedCandidateByEmail)
 
 module.exports = router;

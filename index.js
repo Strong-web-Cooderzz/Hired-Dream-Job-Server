@@ -33,6 +33,6 @@ app.get('/', (_, res) => {
 	res.sendStatus(200);
 });
 
-app.listen(port, () => {
-	console.log('server running on:', port)
+app.listen(port,()=>{
+    console.log('server running on:', port)
 })
