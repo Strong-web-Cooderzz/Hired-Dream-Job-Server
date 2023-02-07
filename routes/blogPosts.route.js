@@ -1,17 +1,23 @@
 const router = require('express').Router();
-const { blogPosts, postBlog, blogPost } = require('../controllers/blogPosts.controller');
+const { blogPosts, postBlog, blogPost, blogUserEmail, deletePost, editPost } = require('../controllers/blogPosts.controller');
 
 
-// get all categories
+// get all blogs
 router.get("/blogPosts", blogPosts);
 
-// get candidate by id
+// get blog by id
 router.get("/blogPost/:id", blogPost);
 
-// // Candidate Profile Update
-// router.put("/candidate", updateCandidateProfile);
+// Get blog post by email
+router.get("/blogPost/", blogUserEmail);
+
+// blog Profile Update
+router.patch("/editPost/:id", editPost);
 
 // ------apply job section ---------\\
 router.post('/postBlog', postBlog);
+
+// ------delete blog ---------\\
+router.delete('/deletePost/:id', deletePost);
 
 module.exports = router;
