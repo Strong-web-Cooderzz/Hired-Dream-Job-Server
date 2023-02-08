@@ -12,8 +12,20 @@ exports.getAllJobs = async (req, res) => {
 };
 
 exports.jobCounter = async (_, res) => {
-	const result= await jobsCollection.countDocuments();
+	const result = await jobsCollection.countDocuments();
 	res.send(result.toString());
+}
+
+exports.jobCounterByCategory = async (_, res) => {
+	const result = await jobsCollection.aggregate([
+		{
+			$group: {
+				_id: "$category",
+				count: { $sum: 1 }
+			}
+		}
+	]).toArray();
+	res.send(result)
 }
 
 exports.getFeaturedJobs = async (req, res) => {
@@ -139,7 +151,7 @@ exports.searchJobs = async (req, res) => {
 		category = new RegExp(`.*`, 'gi');
 	}
 	const result = await jobsCollection.find({
-		$or: [{"title": searchRe}, {"jobDescription": desRe}, {"company": companyRe}],
+		$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
 		"location": locationRe,
 		"jobType": jobType,
 		"postTime": { "$gte": new Date(time) },
