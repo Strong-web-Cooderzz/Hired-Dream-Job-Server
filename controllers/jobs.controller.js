@@ -28,6 +28,18 @@ exports.jobCounterByCategory = async (_, res) => {
 	res.send(result)
 }
 
+exports.jobCounterByCities = async (_, res) => {
+	const result= await jobsCollection.aggregate([
+		{
+			$group: {
+				_id: "$category",
+				count: { $sum: 1 }
+			}
+		}
+	]).toArray();
+	res.send(result)
+}
+
 exports.getFeaturedJobs = async (req, res) => {
 	const result = await featuredJobCollection.find({}).limit(6).toArray();
 	res.send(result);
@@ -97,6 +109,7 @@ exports.searchJobs = async (req, res) => {
 	const query = req.query;
 	const search = req.query.search;
 	const location = req.query.location;
+	const category = req.query.category;
 	let jobType;
 	if (query.type) {
 		if (query.type === 'all') {
@@ -113,6 +126,7 @@ exports.searchJobs = async (req, res) => {
 	const desRe = new RegExp(`.*${search}.*`, 'gi');
 	const companyRe = new RegExp(`.*${search}.*`, 'gi');
 	const locationRe = new RegExp(`.*${location}.*`, 'gi');
+	const categoryRe = new RegExp(`.*${category}.*`, 'gi')
 	let newest;
 	if (query.sort === 'new' || query.sort == '') {
 		// -1 returns desecndeing
@@ -146,17 +160,13 @@ exports.searchJobs = async (req, res) => {
 	}
 	const perPage = Number(query["per-page"]);
 	const pageNumber = parseInt(query.page);
-	let category = query.category;
-	if (category === '') {
-		category = new RegExp(`.*`, 'gi');
-	}
 	const result = await jobsCollection.find({
 		$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
 		"location": locationRe,
 		"jobType": jobType,
 		"postTime": { "$gte": new Date(time) },
 		"isVisible": true,
-		category
+		category: categoryRe
 	}).sort({
 		"postTime": newest
 	}).limit(perPage).skip((pageNumber - 1) * perPage).toArray();

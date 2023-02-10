@@ -19,5 +19,7 @@ router.post('/postBlog', postBlog);
 
 // ------delete blog ---------\\
 router.delete('/deletePost/:id', deletePost);
+// post comment on blog post
+router.post('/post-comment', postComment)
 
 module.exports = router;
