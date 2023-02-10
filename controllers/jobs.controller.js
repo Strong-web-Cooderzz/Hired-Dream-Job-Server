@@ -28,8 +28,33 @@ exports.jobCounterByCategory = async (_, res) => {
 	res.send(result)
 }
 
+// Get featured Job
+
 exports.getFeaturedJobs = async (req, res) => {
-	const result = await featuredJobCollection.find({}).limit(6).toArray();
+	const result = await featuredJobCollection.find({}).limit(8).toArray();
+	res.send(result);
+};
+
+// Get featured Job By Id
+
+exports.featuredJob = async (req, res) => {
+	const id = req.params.id
+	const result = await featuredJobCollection.findOne({_id: id})
+	res.send(result);
+};
+
+// Delete featured Job By Id
+
+exports.deleteFeaturedJob = async (req, res) => {
+	const id = req.params.id
+	const result = await featuredJobCollection.deleteOne({_id: id})
+	res.send(result);
+};
+
+// Post Featured Job
+exports.PostFeaturedJobs = async (req, res) => {
+	const featured = req.body;
+	const result = await featuredJobCollection.insertOne(featured);
 	res.send(result);
 };
 
