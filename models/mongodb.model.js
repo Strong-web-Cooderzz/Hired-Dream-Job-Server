@@ -1,4 +1,5 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const uri = "mongodb+srv://DreamUser:7LKaa1qZ3Gh9BYS9@cluster0.b5doc61.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
@@ -16,4 +17,4 @@ const categoriesCollection = client.db("hired-job").collection("blogCategories")
 const tagsCollection = client.db("hired-job").collection("blogTags");
 const postsCollection = client.db("hired-job").collection("blogPosts");
 
-module.exports = {jobsCollection,ObjectId,categoriesCollection,tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection};
+module.exports = {jobsCollection,stripe,ObjectId,categoriesCollection,tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection};

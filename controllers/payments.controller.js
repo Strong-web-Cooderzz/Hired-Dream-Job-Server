@@ -6,7 +6,7 @@ exports.payForFeaturedJob = async (req, res) => {
 	const ammount = price * 100;
 	const paymentIntent = await stripe.paymentIntents.create({
 		currency: 'usd',
-		ammount: ammount,
+		amount: ammount,
 		'payment_method_types': [
 			'card'
 		]

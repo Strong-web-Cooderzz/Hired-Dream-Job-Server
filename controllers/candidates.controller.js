@@ -1,6 +1,4 @@
-
 const { usersCollection, applyJobCollection, ObjectId } = require('../models/mongodb.model');
-
 
 exports.getAllCandidate = async (req, res) => {
 	const candidate = req.query.type;
