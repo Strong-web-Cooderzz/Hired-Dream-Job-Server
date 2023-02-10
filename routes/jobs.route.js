@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { getAllJobs, getJobByEmail, getJobsById, postJob, updateJob, deleteJob, searchJobs, updateJobVisibility, myAppliedJobs, getFeaturedJobs, jobCounter, jobCounterByCategory, jobCounterByCities } = require('../controllers/jobs.controller');
+
+
+const { getAllJobs, getJobByEmail, getJobsById, postJob, updateJob, deleteJob, searchJobs, updateJobVisibility, myAppliedJobs, getFeaturedJobs, jobCounter, jobCounterByCategory, PostFeaturedJobs, featuredJob, deleteFeaturedJob,jobCounterByCities } = require('../controllers/jobs.controller');
+
 
 // get all jobs
 router.get('/jobs', getAllJobs)
@@ -25,6 +28,15 @@ router.patch("/jobs/:id", updateJobVisibility);
 
 // Featured Job
 router.get("/featured", getFeaturedJobs);
+
+// Featured Job Filter by Id
+router.get("/featured/:id", featuredJob);
+
+// Delete Featured Job
+router.delete('/featured/:id', deleteFeaturedJob);
+
+// Post Featured Job
+router.post("/featured", PostFeaturedJobs);
 
 // Update job
 router.patch("/jobsUpdate/:id", updateJob);
