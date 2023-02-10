@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { blogPosts, postBlog, blogPost } = require('../controllers/blogPosts.controller');
+const { blogPosts, postBlog, blogPost, postComment } = require('../controllers/blogPosts.controller');
 
 
 // get all categories
@@ -13,5 +13,8 @@ router.get("/blogPost/:id", blogPost);
 
 // ------apply job section ---------\\
 router.post('/postBlog', postBlog);
+
+// post comment on blog post
+router.post('/post-comment', postComment)
 
 module.exports = router;
