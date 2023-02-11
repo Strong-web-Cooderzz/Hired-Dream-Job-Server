@@ -15,14 +15,11 @@ const categoryRouter = require('./routes/blogCategory.route');
 const tagsRouter = require('./routes/tags.route');
 const postRoute = require('./routes/blogPosts.route');
 const stripeRoute = require('./routes/stripe.route');
-const sslPay = require('./routes/sslPay.route');
+// const sslPay = require('./routes/sslPay.route');
 
 // middleware
 app.use(cors());
 app.use(express.json());
-
-
-
 
 // using route
 app.use(candidatesRouter);
@@ -34,7 +31,7 @@ app.use(usersRouter);
 app.use(tagsRouter);
 app.use(postRoute);
 app.use(stripeRoute);
-app.use(sslPay);
+// app.use(sslPay);
 
 app.get('/', (_, res) => {
 	res.sendStatus(200);

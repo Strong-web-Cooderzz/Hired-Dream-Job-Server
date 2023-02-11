@@ -1,8 +1,27 @@
 const { usersCollection, applyJobCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.getAllCandidate = async (req, res) => {
-	const candidate = req.query.type;
-	const query = { type: candidate };
+	const returnRegex = value => {
+		return new RegExp(`.*${value}.*`, 'gi')
+	}
+
+	const candidateType = req.query.type;
+	const candidate = req.query.candidate;
+	const location = req.query.location;
+
+	const query = { type: candidateType, fullName: candidate };
+
+	if (!candidate) {
+		query.fullName = { $exists: true }
+	} else {
+		query.fullName = returnRegex(candidate)
+	}
+	// if (!location) {
+	// 	query.address = { $exists: true }
+	// } else {
+	// 	query.address = returnRegex(location)
+	// }
+
 	const result = await usersCollection.find(query).toArray();
 	res.send(result);
 };
@@ -34,9 +53,9 @@ exports.applyToJob = async (req, res) => {
 	res.send(saveJobApply)
 };
 
-exports.getAppliedCandidateByEmail =  async(req, res) => {
-	const email = req.params.email ;
-	const query = {companyEmail:email}
+exports.getAppliedCandidateByEmail = async (req, res) => {
+	const email = req.params.email;
+	const query = { companyEmail: email }
 	const appliedCandidate = await applyJobCollection.find(query).toArray()
 	res.send(appliedCandidate)
 }
