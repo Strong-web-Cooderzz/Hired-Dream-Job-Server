@@ -72,7 +72,7 @@ exports.registerUser = async (req, res) => {
 						if (result.acknowledged) {
 							console.log(result)
 							user.email = email;
-							user.fullName = fullName;
+							user.fullName = name;
 							user.photo = photo;
 							user.type = type;
 							// creating account in firebase
