@@ -9,19 +9,21 @@ const adminApp = admin.initializeApp({
 function verifyJWT(req, res, next) {
 	const token = req.headers.authorization.split(' ')[1];
 	getAuth(adminApp)
-	.verifyIdToken(token, true)
-	.then(payload => {
+		.verifyIdToken(token, true)
+		.then(payload => {
 			// console.log(payload)
 			req.decoded = payload.email;
 			next();
 		})
-	.catch(err => {
-			if(err.code === 'auth/id-token-revoked'){
+		.catch(err => {
+			if (err.code === 'auth/id-token-revoked') {
 				res.status(401);
 			} else {
 				res.status(401).json(err.code);
 			}
 		})
 }
+
+module.exports = { adminApp }
 
 module.exports = verifyJWT;

@@ -103,12 +103,15 @@ exports.deleteComment = (req, res) => {
 				pipeline: [
 					{
 						$match: { '_id': ObjectId(req.query.commentId) }
+					},
+					{
+						$unwind: '$comment'
 					}
 				]
-			}
-		}
+			},
+		},
 	]).forEach(async i => {
-		const result = await commentsCollection.deleteOne({ _id: ObjectId(i.comment[0]._id) })
+		const result = await commentsCollection.deleteOne({ _id: ObjectId(i.comment[0]?._id) })
 		res.send(result)
 	});
 }

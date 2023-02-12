@@ -1,3 +1,5 @@
+const { getAuth } = require('firebase-admin/auth');
+const { adminApp } = require('../middlewares/verifyJWT');
 const { usersCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.getUserByEmail = async (req, res) => {
@@ -42,3 +44,59 @@ exports.updateUser = async (req, res) => {
 	);
 	res.send(result);
 };
+
+exports.registerUser = async (req, res) => {
+	const email = req.body.email;
+	const name = req.body.fullName;
+	const photo = req.body.photo;
+	const type = req.body.type;
+	const password = req.body.password;
+	const user = {};
+
+	// checks if user exists with same email or not
+	usersCollection.findOne({ email })
+		.then(response => {
+			if (response) {
+				res.json({ msg: 'account-exists' })
+			} else {
+				// making sure every email is unique
+				usersCollection.createIndex({ 'email': 1 }, { unique: true })
+					.then(async _ => {
+						// inserting new document
+						const result = await usersCollection.insertOne({
+							email,
+							fullName: name,
+							photo,
+							type
+						});
+						if (result.acknowledged) {
+							console.log(result)
+							user.email = email;
+							user.fullName = fullName;
+							user.photo = photo;
+							user.type = type;
+							// creating account in firebase
+							getAuth(adminApp)
+								.createUser({
+									uid: result.insertedId.toString(),
+									email,
+									emailVerified: false,
+									password
+								})
+								.then(userRecord => {
+									console.log(userRecord);
+									getAuth(adminApp)
+										.createCustomToken(result.insertedId.toString())
+										.then(customToken => {
+											console.log(user)
+											user.token = customToken;
+											res.send(user)
+										})
+										.catch(err => console.log(err))
+								})
+								.catch(err => console.log(err))
+						}
+					});
+			}
+		})
+}
