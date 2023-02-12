@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const { blogPosts, postBlog, blogPost, blogUserEmail, deletePost, editPost, postComment } = require('../controllers/blogPosts.controller');
+const { blogPosts, postBlog, blogPost, blogUserEmail, deletePost, editPost, postComment, deleteComment } = require('../controllers/blogPosts.controller');
+const verifyJWT = require('../middlewares/verifyJWT');
 
 
 // get all blogs
@@ -22,5 +23,7 @@ router.delete('/deletePost/:id', deletePost);
 
 // post comment on blog post
 router.post('/post-comment', postComment)
+
+router.delete('/delete-comment', verifyJWT, deleteComment)
 
 module.exports = router;

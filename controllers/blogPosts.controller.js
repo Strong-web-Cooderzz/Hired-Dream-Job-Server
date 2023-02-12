@@ -1,4 +1,4 @@
-const { postsCollection, ObjectId, commentsCollection } = require('../models/mongodb.model');
+const { postsCollection, ObjectId, commentsCollection, usersCollection } = require('../models/mongodb.model');
 
 exports.blogPosts = async (req, res) => {
 	const result = await postsCollection.find({}).toArray();
@@ -85,4 +85,30 @@ exports.postComment = async (req, res) => {
 	} else {
 		return
 	}
+}
+
+exports.deleteComment = (req, res) => {
+	usersCollection.aggregate([
+		{
+			$match: {
+				'email': req.decoded
+			}
+		},
+		{
+			$lookup: {
+				from: 'comments',
+				localField: '_id',
+				foreignField: 'userId',
+				as: 'comment',
+				pipeline: [
+					{
+						$match: { '_id': ObjectId(req.query.commentId) }
+					}
+				]
+			}
+		}
+	]).forEach(async i => {
+		const result = await commentsCollection.deleteOne({ _id: ObjectId(i.comment[0]._id) })
+		res.send(result)
+	});
 }
