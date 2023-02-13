@@ -11,6 +11,14 @@ exports.getAllJobs = async (req, res) => {
 	}
 };
 
+exports.getAllJobsByType = async (req, res) => {
+	const type = req.query.type==='true';
+	const filter = {isVisible: type}
+	const result = await jobsCollection.find(filter).toArray();
+	res.send(result);
+}
+
+
 exports.jobCounter = async (_, res) => {
 	const result = await jobsCollection.countDocuments();
 	res.send(result.toString());

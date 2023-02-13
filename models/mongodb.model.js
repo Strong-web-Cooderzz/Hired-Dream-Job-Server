@@ -18,4 +18,4 @@ const tagsCollection = client.db("hired-job").collection("blogTags");
 const postsCollection = client.db("hired-job").collection("blogPosts");
 const commentsCollection = client.db('hired-job').collection('comments')
 
-module.exports = { jobsCollection, ObjectId, categoriesCollection, tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection, commentsCollection };
+module.exports = { jobsCollection, ObjectId, categoriesCollection, tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection, commentsCollection ,stripe};

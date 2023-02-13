@@ -1,5 +1,8 @@
 const router = require('express').Router();
-const { getUserByEmail, insertUser, updateUser, getUserByType } = require('../controllers/users.controller');
+const { getUserByEmail, insertUser, updateUser, getUserByType, getAllUsers } = require('../controllers/users.controller');
+
+// get all users
+router.get("/users", getAllUsers);
 
 // get user by email
 router.get("/user", getUserByEmail);

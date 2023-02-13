@@ -7,6 +7,11 @@ exports.getUserByEmail = async (req, res) => {
 	res.send(result);
 };
 
+exports.getAllUsers = async (req, res) => {
+	const result = await usersCollection.find({}).toArray();
+	res.send(result);
+};
+
 exports.insertUser = async (req, res) => {
 	const userData = req.body;
 	const result = await usersCollection.insertOne(userData);

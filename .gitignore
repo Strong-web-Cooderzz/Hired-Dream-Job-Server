@@ -13,6 +13,7 @@ dist-ssr
 *.local
 
 /yarn.lock
+/serviceKeyAccount.json
 
 # Editor directories and files
 .vscode/*
