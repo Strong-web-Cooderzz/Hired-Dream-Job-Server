@@ -100,3 +100,9 @@ exports.registerUser = async (req, res) => {
 			}
 		})
 }
+
+exports.login = async (req, res) => {
+	const user = req.decoded
+	const result = await usersCollection.findOne({ _id: ObjectId(user) })
+	res.send(result)
+}
