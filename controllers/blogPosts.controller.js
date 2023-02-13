@@ -8,6 +8,7 @@ exports.blogPosts = async (req, res) => {
 exports.postBlog = async (req, res) => {
 	const post = req.body;
 	post.date = new Date();
+	post.author = ObjectId(req.decoded)
 	const result = await postsCollection.insertOne(post);
 	res.send(result);
 };

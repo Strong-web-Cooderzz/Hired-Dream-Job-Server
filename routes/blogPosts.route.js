@@ -15,8 +15,8 @@ router.get("/blogPost/", blogUserEmail);
 // blog Profile Update
 router.patch("/editPost/:id", editPost);
 
-// ------apply job section ---------\\
-router.post('/postBlog', postBlog);
+// post new blog
+router.post('/postBlog', verifyJWT, postBlog);
 
 // ------delete blog ---------\\
 router.delete('/deletePost/:id', deletePost);
