@@ -98,31 +98,17 @@ exports.postComment = async (req, res) => {
 	}
 }
 
-exports.deleteComment = (req, res) => {
-	usersCollection.aggregate([
-		{
-			$match: {
-				'email': req.decoded
-			}
-		},
-		{
-			$lookup: {
-				from: 'comments',
-				localField: '_id',
-				foreignField: 'userId',
-				as: 'comment',
-				pipeline: [
-					{
-						$match: { '_id': ObjectId(req.query.commentId) }
-					},
-					{
-						$unwind: '$comment'
-					}
-				]
-			},
-		},
-	]).forEach(async i => {
-		const result = await commentsCollection.deleteOne({ _id: ObjectId(i.comment[0]?._id) })
-		res.send(result)
-	});
+exports.deleteComment = async (req, res) => {
+	const userId = ObjectId(req.decoded)
+	const commentId = ObjectId(req.query.commentId)
+	const result = await commentsCollection.deleteOne({ _id: commentId, userId })
+	if (result.acknowledged) {
+		if (result.deletedCount) {
+			res.json({ success: true });
+		} else {
+			res.json({ success: false });
+		}
+	} else {
+			res.json({ success: false });
+	}
 }
