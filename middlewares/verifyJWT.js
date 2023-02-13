@@ -12,12 +12,12 @@ function verifyJWT(req, res, next) {
 		.verifyIdToken(token, true)
 		.then(payload => {
 			// console.log(payload)
-			req.decoded = payload.email;
+			req.decoded = payload.uid;
 			next();
 		})
 		.catch(err => {
 			if (err.code === 'auth/id-token-revoked') {
-				res.status(401);
+				res.status(401).json(err.code);
 			} else {
 				res.status(401).json(err.code);
 			}
