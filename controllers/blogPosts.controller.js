@@ -22,6 +22,17 @@ exports.blogPost = async (req, res) => {
 		},
 		{
 			$lookup: {
+				from: "users",
+				localField: "author",
+				foreignField: "_id",
+				as: "author"
+			}
+		},
+		{
+			$unwind: "$author"
+		},
+		{
+			$lookup: {
 				from: "comments",
 				localField: "_id",
 				foreignField: "postId",
