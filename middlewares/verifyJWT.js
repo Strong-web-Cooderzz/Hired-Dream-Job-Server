@@ -7,21 +7,23 @@ const adminApp = admin.initializeApp({
 });
 
 function verifyJWT(req, res, next) {
-	const token = req.headers.authorization.split(' ')[1];
-	getAuth(adminApp)
-		.verifyIdToken(token, true)
-		.then(payload => {
-			// console.log(payload)
-			req.decoded = payload.uid;
-			next();
-		})
-		.catch(err => {
-			if (err.code === 'auth/id-token-revoked') {
-				res.status(401).json(err.code);
-			} else {
-				res.status(401).json(err.code);
-			}
-		})
+	const headerToken = req.headers.authorization;
+	if (headerToken) {
+		const token = req.headers.authorization.split(' ')[1];
+		getAuth(adminApp)
+			.verifyIdToken(token, true)
+			.then(payload => {
+				req.decoded = payload.uid;
+				next();
+			})
+			.catch(err => {
+				if (err.code === 'auth/id-token-revoked') {
+					res.status(401).json(err.code);
+				} else {
+					res.status(401).json(err.code);
+				}
+			})
+	}
 }
 
 module.exports = { adminApp }

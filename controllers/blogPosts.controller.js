@@ -90,8 +90,9 @@ exports.deletePost = async (req, res) => {
 
 exports.postComment = async (req, res) => {
 	const comment = req.body;
-	if (comment.userId && comment.postId && comment.comment) {
-		const newComment = { userId: ObjectId(comment.userId), postId: ObjectId(comment.postId), comment: comment.comment }
+	const userId = ObjectId(req.decoded)
+	if (userId && comment.postId && comment.comment) {
+		const newComment = { userId, postId: ObjectId(comment.postId), comment: comment.comment }
 		const result = await commentsCollection.insertOne(newComment);
 		res.send(result)
 	} else {
@@ -104,12 +105,8 @@ exports.deleteComment = async (req, res) => {
 	const commentId = ObjectId(req.query.commentId)
 	const result = await commentsCollection.deleteOne({ _id: commentId, userId })
 	if (result.acknowledged) {
-		if (result.deletedCount) {
-			res.json({ success: true });
-		} else {
-			res.json({ success: false });
-		}
+		res.json({ success: true });
 	} else {
-			res.json({ success: false });
+		res.json({ success: false });
 	}
 }

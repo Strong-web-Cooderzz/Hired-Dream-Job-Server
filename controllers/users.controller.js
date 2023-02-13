@@ -75,6 +75,7 @@ exports.registerUser = async (req, res) => {
 							user.fullName = name;
 							user.photo = photo;
 							user.type = type;
+							user._id = result.insertedId;
 							// creating account in firebase
 							getAuth(adminApp)
 								.createUser({
@@ -88,7 +89,6 @@ exports.registerUser = async (req, res) => {
 									getAuth(adminApp)
 										.createCustomToken(result.insertedId.toString())
 										.then(customToken => {
-											console.log(user)
 											user.token = customToken;
 											res.send(user)
 										})
