@@ -31,7 +31,7 @@ exports.jobCounterByCategory = async (_, res) => {
 
 
 exports.jobCounterByCities = async (_, res) => {
-	const result= await jobsCollection.aggregate([
+	const result = await jobsCollection.aggregate([
 		{
 			$group: {
 				_id: "$category",
@@ -52,7 +52,7 @@ exports.getFeaturedJobs = async (req, res) => {
 
 exports.featuredJob = async (req, res) => {
 	const id = req.params.id
-	const result = await featuredJobCollection.findOne({_id: id})
+	const result = await featuredJobCollection.findOne({ _id: id })
 	res.send(result);
 };
 
@@ -60,7 +60,7 @@ exports.featuredJob = async (req, res) => {
 
 exports.deleteFeaturedJob = async (req, res) => {
 	const id = req.params.id
-	const result = await featuredJobCollection.deleteOne({_id: id})
+	const result = await featuredJobCollection.deleteOne({ _id: id })
 	res.send(result);
 };
 
@@ -186,7 +186,8 @@ exports.searchJobs = async (req, res) => {
 	}
 	const perPage = Number(query["per-page"]);
 	const pageNumber = parseInt(query.page);
-	const result = await jobsCollection.find({
+	const result = {}
+	result.data = await jobsCollection.find({
 		$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
 		"location": locationRe,
 		"jobType": jobType,
@@ -196,5 +197,6 @@ exports.searchJobs = async (req, res) => {
 	}).sort({
 		"postTime": newest
 	}).limit(perPage).skip((pageNumber - 1) * perPage).toArray();
+	result.count = await jobsCollection.countDocuments()
 	res.send(result);
 };

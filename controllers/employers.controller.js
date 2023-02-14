@@ -33,7 +33,7 @@ exports.searchEmployers = async (req, res) => {
 	const searchRe = new RegExp(`.*${search}.*`, "gi");
 	const locationRe = new RegExp(`.*${location}.*`, "gi");
 	const result = await usersCollection
-		.find({ fullName: searchRe, address: locationRe })
+		.find({ fullName: searchRe, type: 'Agency' })
 		.toArray();
 	res.send(result);
 }

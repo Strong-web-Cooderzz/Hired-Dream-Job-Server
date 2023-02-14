@@ -34,9 +34,9 @@ exports.getCandidateById = async (req, res) => {
 };
 
 exports.updateCandidateProfile = async (req, res) => {
-	const email = req.query.email;
+	const userId = ObjectId(req.decoded)
 	const updateData = req.body;
-	const filter = { email: email };
+	const filter = { _id: userId };
 	const option = { upsert: true };
 	const userData = {
 		$set: updateData,
@@ -47,8 +47,7 @@ exports.updateCandidateProfile = async (req, res) => {
 
 exports.applyToJob = async (req, res) => {
 	const jobReq = req.body;
-	// converts base64 string to binary
-	jobReq.candidateResume = Buffer.from(jobReq.candidateResume, 'base64');
+	jobReq.applyDate = new Date();
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	res.send(saveJobApply)
 };

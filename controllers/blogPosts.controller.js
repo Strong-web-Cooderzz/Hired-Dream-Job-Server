@@ -92,7 +92,7 @@ exports.postComment = async (req, res) => {
 	const comment = req.body;
 	const userId = ObjectId(req.decoded)
 	if (userId && comment.postId && comment.comment) {
-		const newComment = { userId, postId: ObjectId(comment.postId), comment: comment.comment }
+		const newComment = { userId, postId: ObjectId(comment.postId), comment: comment.comment, date: new Date() }
 		const result = await commentsCollection.insertOne(newComment);
 		res.send(result)
 	} else {

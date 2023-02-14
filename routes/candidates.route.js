@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { getAllCandidate, getCandidateById, updateCandidateProfile, applyToJob, getAppliedCandidateByEmail } = require('../controllers/candidates.controller');
+const verifyJWT = require('../middlewares/verifyJWT');
 
 // get all candidates
 router.get("/candidate", getAllCandidate);
@@ -8,7 +9,7 @@ router.get("/candidate", getAllCandidate);
 router.get("/candidate/:id", getCandidateById);
 
 // Candidate Profile Update
-router.put("/candidate", updateCandidateProfile);
+router.put("/candidate", verifyJWT, updateCandidateProfile);
 
 // ------apply job section ---------\\
 router.post('/candidate/applyjobs', applyToJob);

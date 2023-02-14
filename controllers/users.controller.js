@@ -82,7 +82,8 @@ exports.registerUser = async (req, res) => {
 									uid: result.insertedId.toString(),
 									email,
 									emailVerified: false,
-									password
+									password,
+									photoURL: photo
 								})
 								.then(userRecord => {
 									console.log(userRecord);
