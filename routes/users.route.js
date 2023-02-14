@@ -18,6 +18,6 @@ router.get('/login', verifyJWT, login)
 router.post("/user", insertUser);
 
 // update user
-router.put("/user/:id", updateUser);
+router.put("/user/:id", verifyJWT, updateUser);
 
 module.exports = router;

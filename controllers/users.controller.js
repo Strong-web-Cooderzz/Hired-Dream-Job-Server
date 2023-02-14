@@ -29,9 +29,12 @@ exports.getUserByType = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-	const id = req.params.id;
+	const id = req.decoded;
 	const userData = req.body;
-	console.log(id);
+	// user can not change their email
+	delete userData['email']
+	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+	userData.ip = ip;
 	const filter = { _id: ObjectId(id) };
 	const option = { upsert: true };
 	const updateUser = {
@@ -42,7 +45,18 @@ exports.updateUser = async (req, res) => {
 		updateUser,
 		option
 	);
-	res.send(result);
+	if (result.acknowledged) {
+		getAuth(adminApp)
+			.updateUser(id, {
+				displayName: userData.fullName,
+				phoneNumber: userData.phoneNumber,
+				photoURL: userData.photo
+			})
+			.then(userRecord => {
+				res.send(result);
+			})
+			.catch(err => console.log(err))
+	}
 };
 
 exports.registerUser = async (req, res) => {
@@ -51,6 +65,7 @@ exports.registerUser = async (req, res) => {
 	const photo = req.body.photo;
 	const type = req.body.type;
 	const password = req.body.password;
+	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 	const user = {};
 
 	// checks if user exists with same email or not
@@ -67,7 +82,8 @@ exports.registerUser = async (req, res) => {
 							email,
 							fullName: name,
 							photo,
-							type
+							type,
+							ip
 						});
 						if (result.acknowledged) {
 							console.log(result)
@@ -83,6 +99,7 @@ exports.registerUser = async (req, res) => {
 									email,
 									emailVerified: false,
 									password,
+									displayName: name,
 									photoURL: photo
 								})
 								.then(userRecord => {

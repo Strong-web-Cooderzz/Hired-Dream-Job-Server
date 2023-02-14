@@ -87,8 +87,22 @@ exports.getJobByEmail = async (req, res) => {
 
 exports.getJobsById = async (req, res) => {
 	const id = req.params.id;
-	const query = { _id: ObjectId(id) };
-	const result = await jobsCollection.findOne(query);
+	const result = await jobsCollection.aggregate([
+		{
+			$match: { _id: ObjectId(id) }
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'companyId',
+				foreignField: '_id',
+				as: 'company'
+			}
+		},
+		{
+			$unwind: '$company'
+		}
+	]).toArray();
 	res.send(result);
 };
 
@@ -197,6 +211,13 @@ exports.searchJobs = async (req, res) => {
 	}).sort({
 		"postTime": newest
 	}).limit(perPage).skip((pageNumber - 1) * perPage).toArray();
-	result.count = await jobsCollection.countDocuments()
+	result.count = await jobsCollection.countDocuments({
+		$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
+		"location": locationRe,
+		"jobType": jobType,
+		"postTime": { "$gte": new Date(time) },
+		"isVisible": true,
+		category: categoryRe
+	})
 	res.send(result);
 };
