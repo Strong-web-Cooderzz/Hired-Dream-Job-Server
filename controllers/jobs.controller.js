@@ -1,4 +1,4 @@
-const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId } = require('../models/mongodb.model');
+const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId, usersCollection } = require('../models/mongodb.model');
 
 exports.getAllJobs = async (req, res) => {
 	const limit = Number(req.query.limit);
@@ -200,17 +200,47 @@ exports.searchJobs = async (req, res) => {
 	}
 	const perPage = Number(query["per-page"]);
 	const pageNumber = parseInt(query.page);
-	const result = {}
-	result.data = await jobsCollection.find({
-		$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
-		"location": locationRe,
-		"jobType": jobType,
-		"postTime": { "$gte": new Date(time) },
-		"isVisible": true,
-		category: categoryRe
-	}).sort({
-		"postTime": newest
-	}).limit(perPage).skip((pageNumber - 1) * perPage).toArray();
+	const result = {};
+	// result.data = await jobsCollection.find({
+	// 	$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
+	// 	"location": locationRe,
+	// 	"jobType": jobType,
+	// 	"postTime": { "$gte": new Date(time) },
+	// 	"isVisible": true,
+	// 	category: categoryRe
+	// }).sort({
+	// 	"postTime": newest
+	// }).limit(perPage).skip((pageNumber - 1) * perPage).toArray();
+	const skip = Number((pageNumber - 1) * perPage);
+	result.data = await jobsCollection.aggregate([
+		{
+			$match: {
+				$or: [{ title: searchRe }, { jobDescription: desRe }, { company: companyRe }],
+				location: locationRe,
+				"jobType": jobType,
+				"postTime": { "$gte": new Date(time) },
+				"isVisible": true,
+				category: categoryRe
+			}
+		},
+		{
+			$sort: {postTime: newest}
+		},
+		{
+			$skip: skip
+		},
+		{
+			$limit: perPage
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'companyId',
+				foreignField: '_id',
+				as: 'company'
+			}
+		},
+	]).toArray();
 	result.count = await jobsCollection.countDocuments({
 		$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
 		"location": locationRe,
