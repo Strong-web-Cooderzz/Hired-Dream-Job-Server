@@ -33,8 +33,8 @@ exports.updateUser = async (req, res) => {
 	const userData = req.body;
 	// user can not change their email
 	delete userData['email']
-	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-	userData.ip = ip;
+	// const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+	userData.ip = '0.0.0.0';
 	const filter = { _id: ObjectId(id) };
 	const option = { upsert: true };
 	const updateUser = {
