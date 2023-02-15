@@ -21,6 +21,6 @@ router.post("/user", insertUser);
 router.put("/user/:id", verifyJWT, updateUser);
 
 // delete a user
-router.delete('/delete-user', deleteUser)
+router.delete('/delete-user', verifyJWT, deleteUser)
 
 module.exports = router;

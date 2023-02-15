@@ -127,13 +127,25 @@ exports.login = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
 	const userId = req.query.id;
-	usersCollection.deleteOne({_id: ObjectId(userId)})
-	.then(result => {
-			if(result.acknowledged) {
-				getAuth(adminApp)
-				.deleteUser(userId)
-				.then(() => res.json({acknowledged: true}))
-				.catch(err => console.log(err))
+	const adminId = req.decoded;
+	// checks if user is admin or not from database
+	usersCollection.findOne({ _id: ObjectId(adminId) })
+		.then(isUserAdmin => {
+			// targeted user will be deleted if user is admin
+			if (isUserAdmin) {
+				// delete targeted user from database
+				usersCollection.deleteOne({ _id: ObjectId(userId) })
+					.then(result => {
+						// delete targeted user from firebase
+						if (result.acknowledged) {
+							getAuth(adminApp)
+								.deleteUser(userId)
+								.then(() => res.json({ acknowledged: true }))
+								.catch(err => console.log(err))
+						}
+					})
+			} else {
+				res.send(401);
 			}
 		})
 }
