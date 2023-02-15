@@ -124,3 +124,16 @@ exports.login = async (req, res) => {
 	const result = await usersCollection.findOne({ _id: ObjectId(user) })
 	res.send(result)
 }
+
+exports.deleteUser = async (req, res) => {
+	const userId = req.query.id;
+	usersCollection.deleteOne({_id: ObjectId(userId)})
+	.then(result => {
+			if(result.acknowledged) {
+				getAuth(adminApp)
+				.deleteUser(userId)
+				.then(() => res.json({acknowledged: true}))
+				.catch(err => console.log(err))
+			}
+		})
+}
