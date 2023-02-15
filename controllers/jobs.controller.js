@@ -19,11 +19,14 @@ exports.jobCounter = async (_, res) => {
 exports.jobCounterByCategory = async (_, res) => {
 	const result = await jobsCollection.aggregate([
 		{
+			$match: {isVisible: true}
+		},
+		{
 			$group: {
 				_id: "$category",
 				count: { $sum: 1 }
 			}
-		}
+		},
 	]).toArray();
 	res.send(result)
 }
@@ -224,7 +227,7 @@ exports.searchJobs = async (req, res) => {
 			}
 		},
 		{
-			$sort: {postTime: newest}
+			$sort: { postTime: newest }
 		},
 		{
 			$skip: skip
