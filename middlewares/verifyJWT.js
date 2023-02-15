@@ -23,6 +23,8 @@ function verifyJWT(req, res, next) {
 					res.status(401).json(err.code);
 				}
 			})
+	} else {
+		res.status(401)
 	}
 }
 

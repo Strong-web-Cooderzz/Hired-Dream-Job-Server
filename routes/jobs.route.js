@@ -3,6 +3,7 @@ const router = express.Router();
 
 
 const { getAllJobs, getJobByEmail, getJobsById, postJob, updateJob, deleteJob, searchJobs, updateJobVisibility, myAppliedJobs, getFeaturedJobs, jobCounter, jobCounterByCategory, PostFeaturedJobs, featuredJob, deleteFeaturedJob,jobCounterByCities } = require('../controllers/jobs.controller');
+const verifyJWT = require('../middlewares/verifyJWT');
 
 
 // get all jobs
@@ -21,7 +22,7 @@ router.get('/jobsFindByEmail', getJobByEmail)
 router.get("/jobs/:id", getJobsById);
 
 // Post job
-router.post("/jobs", postJob);
+router.post("/jobs", verifyJWT, postJob);
 
 // Job Visibility Update
 router.patch("/jobs/:id", updateJobVisibility);

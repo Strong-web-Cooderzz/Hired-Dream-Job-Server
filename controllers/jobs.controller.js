@@ -112,7 +112,9 @@ exports.getJobsById = async (req, res) => {
 exports.postJob = async (req, res) => {
 	const jobBody = req.body;
 	const date = new Date();
+	const companyId = ObjectId(req.decoded)
 	jobBody.postTime = date;
+	jobBody.companyId;
 	const result = await jobsCollection.insertOne(jobBody);
 	res.send(result);
 };
