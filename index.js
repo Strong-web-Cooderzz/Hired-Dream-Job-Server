@@ -35,7 +35,7 @@ app.use(stripeRoute);
 
 app.get('/', (req, res) => {
 	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-	res.send('Your ip address is' + ip);
+	res.send(`Your ip address is ${ip}` );
 });
 
 app.listen(port, () => {
