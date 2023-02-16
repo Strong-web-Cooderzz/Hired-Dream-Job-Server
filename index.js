@@ -33,8 +33,9 @@ app.use(postRoute);
 app.use(stripeRoute);
 // app.use(sslPay);
 
-app.get('/', (_, res) => {
-	res.sendStatus(200);
+app.get('/', (req, res) => {
+	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+	res.send(`Your ip address is ${ip}` );
 });
 
 app.listen(port, () => {

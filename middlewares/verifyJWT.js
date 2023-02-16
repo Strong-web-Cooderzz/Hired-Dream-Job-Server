@@ -1,9 +1,9 @@
 const admin = require('firebase-admin');
 const { getAuth } = require('firebase-admin/auth');
-const serviceAccount = require('../serviceAccountKey.json');
+// const serviceAccount = require('../serviceAccountKey.json');
 
 const adminApp = admin.initializeApp({
-	credential: admin.credential.cert(serviceAccount)
+	credential: admin.credential.cert(JSON.parse(process.env.SERVICE_ACCOUNT))
 });
 
 function verifyJWT(req, res, next) {
@@ -23,6 +23,8 @@ function verifyJWT(req, res, next) {
 					res.status(401).json(err.code);
 				}
 			})
+	} else {
+		res.status(401)
 	}
 }
 

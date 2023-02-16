@@ -33,8 +33,8 @@ exports.updateUser = async (req, res) => {
 	const userData = req.body;
 	// user can not change their email
 	delete userData['email']
-	// const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-	userData.ip = '0.0.0.0';
+	userData.ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+	// userData.ip = '0.0.0.0';
 	const filter = { _id: ObjectId(id) };
 	const option = { upsert: true };
 	const updateUser = {
@@ -123,4 +123,29 @@ exports.login = async (req, res) => {
 	const user = req.decoded
 	const result = await usersCollection.findOne({ _id: ObjectId(user) })
 	res.send(result)
+}
+
+exports.deleteUser = async (req, res) => {
+	const userId = req.query.id;
+	const adminId = req.decoded;
+	// checks if user is admin or not from database
+	usersCollection.findOne({ _id: ObjectId(adminId) })
+		.then(isUserAdmin => {
+			// targeted user will be deleted if user is admin
+			if (isUserAdmin) {
+				// delete targeted user from database
+				usersCollection.deleteOne({ _id: ObjectId(userId) })
+					.then(result => {
+						// delete targeted user from firebase
+						if (result.acknowledged) {
+							getAuth(adminApp)
+								.deleteUser(userId)
+								.then(() => res.json({ acknowledged: true }))
+								.catch(err => console.log(err))
+						}
+					})
+			} else {
+				res.send(401);
+			}
+		})
 }

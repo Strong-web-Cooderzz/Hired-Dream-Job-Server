@@ -19,11 +19,14 @@ exports.jobCounter = async (_, res) => {
 exports.jobCounterByCategory = async (_, res) => {
 	const result = await jobsCollection.aggregate([
 		{
+			$match: {isVisible: true}
+		},
+		{
 			$group: {
 				_id: "$category",
 				count: { $sum: 1 }
 			}
-		}
+		},
 	]).toArray();
 	res.send(result)
 }
@@ -109,7 +112,9 @@ exports.getJobsById = async (req, res) => {
 exports.postJob = async (req, res) => {
 	const jobBody = req.body;
 	const date = new Date();
+	const companyId = ObjectId(req.decoded)
 	jobBody.postTime = date;
+	jobBody.companyId = companyId;
 	const result = await jobsCollection.insertOne(jobBody);
 	res.send(result);
 };
@@ -224,7 +229,7 @@ exports.searchJobs = async (req, res) => {
 			}
 		},
 		{
-			$sort: {postTime: newest}
+			$sort: { postTime: newest }
 		},
 		{
 			$skip: skip

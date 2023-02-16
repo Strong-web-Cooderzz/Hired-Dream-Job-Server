@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getUserByEmail, insertUser, updateUser, getUserByType, registerUser, login } = require('../controllers/users.controller');
+const { getUserByEmail, insertUser, updateUser, getUserByType, registerUser, login, deleteUser } = require('../controllers/users.controller');
 const verifyJWT = require('../middlewares/verifyJWT');
 
 // get user by email
@@ -19,5 +19,8 @@ router.post("/user", insertUser);
 
 // update user
 router.put("/user/:id", verifyJWT, updateUser);
+
+// delete a user
+router.delete('/delete-user', verifyJWT, deleteUser)
 
 module.exports = router;

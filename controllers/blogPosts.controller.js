@@ -1,8 +1,20 @@
 const { postsCollection, ObjectId, commentsCollection, usersCollection } = require('../models/mongodb.model');
 
 exports.blogPosts = async (req, res) => {
-	const result = await postsCollection.find({}).toArray();
-	res.send(result);
+	const result = await postsCollection.aggregate([
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'author',
+				foreignField: '_id',
+				as: 'author'
+			}
+		},
+		{
+			$unwind: '$author'
+		}
+	]).toArray();
+	res.send(result)
 };
 
 exports.postBlog = async (req, res) => {
