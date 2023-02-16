@@ -5,24 +5,33 @@ exports.getAllCandidate = async (req, res) => {
 		return new RegExp(`.*${value}.*`, 'gi')
 	}
 
-	const candidateType = req.query.type;
-	const candidate = req.query.candidate;
-	const location = req.query.location;
+	let candidate = req.query.candidate;
+	let location = req.query.location;
+	let locationArray = []
 
-	const query = { type: candidateType, fullName: candidate };
-
-	if (!candidate) {
-		query.fullName = { $exists: true }
+	if (candidate) {
+		candidate = returnRegex(candidate)
 	} else {
-		query.fullName = returnRegex(candidate)
+		candidate = new RegExp('.*', 'gi')
 	}
-	// if (!location) {
-	// 	query.address = { $exists: true }
-	// } else {
-	// 	query.address = returnRegex(location)
-	// }
 
-	const result = await usersCollection.find(query).toArray();
+	if (location) {
+		location = returnRegex(location)
+		locationArray = [{'address.city': location}, {'address.country': location}]
+	} else {
+		location = new RegExp('.*', 'gi')
+		locationArray = [{'address': {$exists: true}}, {'address': {$exists: false}}]
+	}
+
+	const result = await usersCollection.aggregate([
+		{
+			$match: {
+				fullName: candidate,
+				type: 'Candidate',
+				$or: locationArray
+			}
+		}
+	]).toArray();
 	res.send(result);
 };
 
