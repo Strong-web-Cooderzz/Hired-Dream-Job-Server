@@ -1,16 +1,49 @@
 const { usersCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.getEmployersByType = async (req, res) => {
-	const employ = req.query.type;
-	const query = { type: employ };
-	const result = await usersCollection.find(query).toArray();
+	const result = await usersCollection.aggregate([
+		{
+			$match: {
+				type: 'Agency'
+			}
+		},
+		{
+			$lookup: {
+				from: 'jobs',
+				localField: '_id',
+				foreignField: 'companyId',
+				as: 'jobs'
+			}
+		},
+		{
+			$addFields: {
+				jobsCount: {$size: '$jobs'}
+			}
+		},
+		{
+			$unset: 'jobs'
+		}
+	]).toArray()
 	res.send(result);
 };
 
 exports.getEmployerById = async (req, res) => {
 	const id = req.params.id;
-	const query = { _id: ObjectId(id) };
-	const result = await usersCollection.findOne(query);
+	const result = await usersCollection.aggregate([
+		{
+			$match: {
+				_id: ObjectId(id)
+			}
+		},
+		{
+			$lookup: {
+				from: 'jobs',
+				localField: '_id',
+				foreignField: 'companyId',
+				as: 'jobs'
+			}
+		}
+	]).toArray();
 	res.send(result);
 };
 
