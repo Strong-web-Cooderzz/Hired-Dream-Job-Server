@@ -129,7 +129,7 @@ exports.deleteUser = async (req, res) => {
 	const userId = req.query.id;
 	const adminId = req.decoded;
 	// checks if user is admin or not from database
-	usersCollection.findOne({ _id: ObjectId(adminId) })
+	usersCollection.findOne({ _id: ObjectId(adminId), type: 'Admin' })
 		.then(isUserAdmin => {
 			// targeted user will be deleted if user is admin
 			if (isUserAdmin) {
