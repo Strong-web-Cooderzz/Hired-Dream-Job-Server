@@ -49,7 +49,7 @@ exports.updateUser = async (req, res) => {
 		getAuth(adminApp)
 			.updateUser(id, {
 				displayName: userData.fullName,
-				phoneNumber: userData.phoneNumber,
+				// phoneNumber: userData.phoneNumber,
 				photoURL: userData.photo
 			})
 			.then(userRecord => {
