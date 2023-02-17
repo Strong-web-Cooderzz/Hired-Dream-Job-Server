@@ -57,6 +57,9 @@ exports.updateCandidateProfile = async (req, res) => {
 exports.applyToJob = async (req, res) => {
 	const jobReq = req.body;
 	jobReq.applyDate = new Date();
+	jobReq.candidateId = ObjectId(req.decoded)
+	jobReq.companyId = ObjectId(jobReq.companyId)
+	jobReq.applyDate = new Date();
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	res.send(saveJobApply)
 };

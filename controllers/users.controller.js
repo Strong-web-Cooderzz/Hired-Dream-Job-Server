@@ -66,8 +66,12 @@ exports.registerUser = async (req, res) => {
 	const email = req.body.email;
 	const name = req.body.fullName;
 	const photo = req.body.photo;
-	const type = req.body.type;
+	let type = req.body.type;
+	if (type !== 'Agency' || type !== 'Candidate') {
+		type = 'Candidate'
+	}
 	const password = req.body.password;
+	const createdAt = new Date();
 	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 	const user = {};
 
@@ -86,6 +90,7 @@ exports.registerUser = async (req, res) => {
 							fullName: name,
 							photo,
 							type,
+							createdAt,
 							ip
 						});
 						if (result.acknowledged) {
