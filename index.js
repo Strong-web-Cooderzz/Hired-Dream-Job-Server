@@ -19,6 +19,10 @@ const stripeRoute = require('./routes/stripe.route');
 
 // middleware
 app.use(cors());
+app.use((req, res, next) => {
+	req.header('Access-Control-Allow-Origin', '*')
+	next();
+})
 app.use(express.json());
 
 // using route
