@@ -1,16 +1,49 @@
 const { usersCollection, ObjectId } = require('../models/mongodb.model');
 
 exports.getEmployersByType = async (req, res) => {
-	const employ = req.query.type;
-	const query = { type: employ };
-	const result = await usersCollection.find(query).toArray();
+	const result = await usersCollection.aggregate([
+		{
+			$match: {
+				type: 'Agency'
+			}
+		},
+		{
+			$lookup: {
+				from: 'jobs',
+				localField: '_id',
+				foreignField: 'companyId',
+				as: 'jobs'
+			}
+		},
+		{
+			$addFields: {
+				jobsCount: { $size: '$jobs' }
+			}
+		},
+		{
+			$unset: 'jobs'
+		}
+	]).toArray()
 	res.send(result);
 };
 
 exports.getEmployerById = async (req, res) => {
 	const id = req.params.id;
-	const query = { _id: ObjectId(id) };
-	const result = await usersCollection.findOne(query);
+	const result = await usersCollection.aggregate([
+		{
+			$match: {
+				_id: ObjectId(id)
+			}
+		},
+		{
+			$lookup: {
+				from: 'jobs',
+				localField: '_id',
+				foreignField: 'companyId',
+				as: 'jobs'
+			}
+		}
+	]).toArray();
 	res.send(result);
 };
 
@@ -28,12 +61,28 @@ exports.updateEmployer = async (req, res) => {
 };
 
 exports.searchEmployers = async (req, res) => {
-	const search = req.query.search;
-	const location = req.query.location;
+	const returnRegex = value => {
+		return new RegExp(`.*${value}.*`, 'gi')
+	}
+
+	let search = req.query.search;
+	let location = req.query.location;
+	let locationArray = [];
+
+	if (location) {
+		locationArray = [{ 'address.city': returnRegex(location) }, { 'address.country': returnRegex(location) }, { 'address.postal': location }, { 'address.street': returnRegex(location) }]
+	} else {
+		locationArray = [{ 'address': true }, { 'address': false }]
+	}
+
 	const searchRe = new RegExp(`.*${search}.*`, "gi");
-	const locationRe = new RegExp(`.*${location}.*`, "gi");
+	// const locationRe = new RegExp(`.*${location}.*`, "gi");
 	const result = await usersCollection
-		.find({ fullName: searchRe, type: 'Agency' })
+		.find({
+			fullName: searchRe,
+			type: 'Agency',
+			$or: locationArray
+		})
 		.toArray();
 	res.send(result);
 }

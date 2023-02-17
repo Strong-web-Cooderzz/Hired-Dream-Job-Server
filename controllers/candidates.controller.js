@@ -5,24 +5,42 @@ exports.getAllCandidate = async (req, res) => {
 		return new RegExp(`.*${value}.*`, 'gi')
 	}
 
-	const candidateType = req.query.type;
-	const candidate = req.query.candidate;
-	const location = req.query.location;
+	let candidate = req.query.candidate;
+	let location = req.query.location;
+	let segment = req.query.segment;
+	let andArray = []
 
-	const query = { type: candidateType, fullName: candidate };
-
-	if (!candidate) {
-		query.fullName = { $exists: true }
+	if (candidate) {
+		candidate = returnRegex(candidate)
 	} else {
-		query.fullName = returnRegex(candidate)
+		candidate = new RegExp('.*', 'gi')
 	}
-	// if (!location) {
-	// 	query.address = { $exists: true }
-	// } else {
-	// 	query.address = returnRegex(location)
-	// }
 
-	const result = await usersCollection.find(query).toArray();
+	if (location && segment) {
+		location = returnRegex(location)
+		segment = returnRegex(segment)
+		andArray = [{$or: [{'address.city': location}, {'address.country': location}]}, {'segment': segment}]
+	} else if (location) {
+		location = returnRegex(location)
+		andArray = [{$or: [{'address.city': location}, {'address.country': location}]}]
+	} else if (segment) {
+		segment = returnRegex(segment)
+		andArray = [{'segment': segment}]
+	} else if(!location) {
+		andArray = [{$or: [{'address': {$exists: true}}, {'address': {$exists: false}}]}]
+	}
+
+	const result = await usersCollection.aggregate([
+		{
+			$match: {
+				fullName: candidate,
+				type: 'Candidate',
+				$and: andArray
+				// $or: segmentArray,
+				// $or: locationArray
+			}
+		}
+	]).toArray();
 	res.send(result);
 };
 
@@ -47,6 +65,9 @@ exports.updateCandidateProfile = async (req, res) => {
 
 exports.applyToJob = async (req, res) => {
 	const jobReq = req.body;
+	jobReq.applyDate = new Date();
+	jobReq.candidateId = ObjectId(req.decoded)
+	jobReq.companyId = ObjectId(jobReq.companyId)
 	jobReq.applyDate = new Date();
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	res.send(saveJobApply)

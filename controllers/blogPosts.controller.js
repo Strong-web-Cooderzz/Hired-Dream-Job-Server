@@ -122,3 +122,7 @@ exports.deleteComment = async (req, res) => {
 		res.json({ success: false });
 	}
 }
+
+exports.postLike = async (req, res) => {
+	const userId = ObjectId(req.decoded)
+}
