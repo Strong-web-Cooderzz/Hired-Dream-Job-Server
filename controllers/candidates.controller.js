@@ -7,7 +7,8 @@ exports.getAllCandidate = async (req, res) => {
 
 	let candidate = req.query.candidate;
 	let location = req.query.location;
-	let locationArray = []
+	let segment = req.query.segment;
+	let andArray = []
 
 	if (candidate) {
 		candidate = returnRegex(candidate)
@@ -15,12 +16,18 @@ exports.getAllCandidate = async (req, res) => {
 		candidate = new RegExp('.*', 'gi')
 	}
 
-	if (location) {
+	if (location && segment) {
 		location = returnRegex(location)
-		locationArray = [{'address.city': location}, {'address.country': location}]
-	} else {
-		location = new RegExp('.*', 'gi')
-		locationArray = [{'address': {$exists: true}}, {'address': {$exists: false}}]
+		segment = returnRegex(segment)
+		andArray = [{$or: [{'address.city': location}, {'address.country': location}]}, {'segment': segment}]
+	} else if (location) {
+		location = returnRegex(location)
+		andArray = [{$or: [{'address.city': location}, {'address.country': location}]}]
+	} else if (segment) {
+		segment = returnRegex(segment)
+		andArray = [{'segment': segment}]
+	} else if(!location) {
+		andArray = [{$or: [{'address': {$exists: true}}, {'address': {$exists: false}}]}]
 	}
 
 	const result = await usersCollection.aggregate([
@@ -28,7 +35,9 @@ exports.getAllCandidate = async (req, res) => {
 			$match: {
 				fullName: candidate,
 				type: 'Candidate',
-				$or: locationArray
+				$and: andArray
+				// $or: segmentArray,
+				// $or: locationArray
 			}
 		}
 	]).toArray();
