@@ -18,7 +18,7 @@ router.get('/login', verifyJWT, login)
 router.post("/user", insertUser);
 
 // update user
-router.put("/user/:id", verifyJWT, updateUser);
+router.put("/user", verifyJWT, updateUser);
 
 // delete a user
 router.delete('/delete-user', verifyJWT, deleteUser)

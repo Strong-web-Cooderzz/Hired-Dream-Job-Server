@@ -67,22 +67,32 @@ exports.searchEmployers = async (req, res) => {
 
 	let search = req.query.search;
 	let location = req.query.location;
+	let segment = req.query.segment;
 	let locationArray = [];
+
+	if (search) {
+		search = returnRegex(search)
+	} else {
+		search = new RegExp('.*', 'gi')
+	}
 
 	if (location) {
 		locationArray = [{ 'address.city': returnRegex(location) }, { 'address.country': returnRegex(location) }, { 'address.postal': location }, { 'address.street': returnRegex(location) }]
 	} else {
-		locationArray = [{ 'address': true }, { 'address': false }]
+		console.log('here')
+		locationArray = [{ 'address': {$exists: true} }, { 'address': {$exists: false} }]
 	}
 
-	const searchRe = new RegExp(`.*${search}.*`, "gi");
-	// const locationRe = new RegExp(`.*${location}.*`, "gi");
 	const result = await usersCollection
-		.find({
-			fullName: searchRe,
-			type: 'Agency',
-			$or: locationArray
-		})
+		.aggregate([
+			{
+				$match: {
+					fullName: search,
+					type: 'Agency',
+					$or: locationArray
+				}
+			}
+		])
 		.toArray();
 	res.send(result);
 }
