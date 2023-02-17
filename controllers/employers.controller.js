@@ -17,7 +17,7 @@ exports.getEmployersByType = async (req, res) => {
 		},
 		{
 			$addFields: {
-				jobsCount: {$size: '$jobs'}
+				jobsCount: { $size: '$jobs' }
 			}
 		},
 		{
@@ -61,12 +61,28 @@ exports.updateEmployer = async (req, res) => {
 };
 
 exports.searchEmployers = async (req, res) => {
-	const search = req.query.search;
-	const location = req.query.location;
+	const returnRegex = value => {
+		return new RegExp(`.*${value}.*`, 'gi')
+	}
+
+	let search = req.query.search;
+	let location = req.query.location;
+	let locationArray = [];
+
+	if (location) {
+		locationArray = [{ 'address.city': returnRegex(location) }, { 'address.country': returnRegex(location) }, { 'address.postal': location }, { 'address.street': returnRegex(location) }]
+	} else {
+		locationArray = [{ 'address': true }, { 'address': false }]
+	}
+
 	const searchRe = new RegExp(`.*${search}.*`, "gi");
-	const locationRe = new RegExp(`.*${location}.*`, "gi");
+	// const locationRe = new RegExp(`.*${location}.*`, "gi");
 	const result = await usersCollection
-		.find({ fullName: searchRe, type: 'Agency' })
+		.find({
+			fullName: searchRe,
+			type: 'Agency',
+			$or: locationArray
+		})
 		.toArray();
 	res.send(result);
 }
