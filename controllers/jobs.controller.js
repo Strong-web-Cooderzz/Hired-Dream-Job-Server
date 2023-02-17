@@ -76,7 +76,7 @@ exports.PostFeaturedJobs = async (req, res) => {
 
 exports.myAppliedJobs = async (req, res) => {
 	const id = req.params.id;
-	const query = { candidateId: id };
+	const query = { _id: ObjectId(id) };
 	const appliedJobPost = await applyJobCollection.find(query).toArray();
 	res.send(appliedJobPost);
 };

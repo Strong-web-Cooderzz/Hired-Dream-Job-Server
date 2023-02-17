@@ -47,8 +47,18 @@ exports.getAllCandidate = async (req, res) => {
 exports.getCandidateById = async (req, res) => {
 	const id = req.params.id;
 	const query = { _id: ObjectId(id) };
-	const result = await usersCollection.findOne(query);
-	res.send(result);
+	const result = await usersCollection.aggregate([
+		{
+			$match: {
+				_id: ObjectId(id)
+			}
+		},
+		{
+			$unset: 'ip'
+		}
+	]).toArray();
+	result.map(singleResult => res.send(singleResult));
+	// res.send(result);
 };
 
 exports.updateCandidateProfile = async (req, res) => {
