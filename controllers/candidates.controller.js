@@ -1,4 +1,5 @@
 const { usersCollection, applyJobCollection, ObjectId } = require('../models/mongodb.model');
+const socketClients = require('../routes/socket.route');
 
 exports.getAllCandidate = async (req, res) => {
 	const returnRegex = value => {
@@ -74,6 +75,10 @@ exports.updateCandidateProfile = async (req, res) => {
 };
 
 exports.applyToJob = async (req, res) => {
+	const specificClients = socketClients.filter(client => jobReq.companyId === client.id)
+	specificClients.map(client => {
+		io.to(client.socketId).emit('notification', `${req.decoded} applied to your job`)
+	})
 	const jobReq = req.body;
 	jobReq.applyDate = new Date();
 	jobReq.candidateId = ObjectId(req.decoded)

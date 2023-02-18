@@ -1,5 +1,4 @@
 const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId, usersCollection } = require('../models/mongodb.model');
-const socketClients = require('../routes/socket.route');
 
 exports.getAllJobs = async (req, res) => {
 	const limit = Number(req.query.limit);
@@ -152,9 +151,6 @@ exports.deleteJob = async (req, res) => {
 };
 
 exports.searchJobs = async (req, res) => {
-	// socketClients.map(client => {
-	// 	io.to(client.socketId).emit('notification', 'New notification')
-	// })
 	const query = req.query;
 	const search = req.query.search;
 	const location = req.query.location;
