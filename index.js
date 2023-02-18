@@ -6,7 +6,7 @@ const server = http.createServer(app)
 const { Server } = require('socket.io')
 global.io = new Server(server, {
 	cors: {
-		origin: "https://hired-dream-job.vercel.app",
+		origin: "*",
 		methods: ["GET", "POST", "PUT", "DELETE"],
 		credentials: true
 	}
@@ -14,7 +14,7 @@ global.io = new Server(server, {
 require("dotenv").config();
 const { getAuth } = require("firebase-admin/auth");
 const { adminApp } = require('./middlewares/verifyJWT');
-const socketClients = require('./routes/socket.route')
+global.socketClients = [];
 
 const port = process.env.PORT || 5000;
 
@@ -64,6 +64,8 @@ io.use((socket, next) => {
 			.verifyIdToken(token, true)
 			.then(payload => {
 				socketClients.push({uid: payload.uid, socketId: socket.id})
+				// console.log(socket.id)
+				// console.log(socketClients)
 				next()
 			})
 			.catch(() => {
