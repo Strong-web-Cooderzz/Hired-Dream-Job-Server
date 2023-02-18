@@ -31,7 +31,7 @@ const stripeRoute = require("./routes/stripe.route");
 // const sslPay = require('./routes/sslPay.route');
 
 // middleware
-app.use(cors());
+// app.use(cors());
 app.use((req, res, next) => {
 	req.header("Access-Control-Allow-Origin", "http://localhost:5173");
 	res.header(
