@@ -19,7 +19,7 @@ exports.jobCounter = async (_, res) => {
 exports.jobCounterByCategory = async (_, res) => {
 	const result = await jobsCollection.aggregate([
 		{
-			$match: {isVisible: true}
+			$match: { isVisible: true }
 		},
 		{
 			$group: {

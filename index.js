@@ -1,10 +1,10 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const http = require('http');
 const server = http.createServer(app)
-const cors = require("cors");
 const { Server } = require('socket.io')
-const io = new Server(server)
+global.io = new Server(server)
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
@@ -46,12 +46,6 @@ app.get('/', (req, res) => {
 	res.send(`Your ip address is ${ip}`);
 });
 
-io.on('connection', socket => {
-	socket.emit('hello', 'Abid Hasan')
-})
-
 server.listen(port, () => {
 	console.log('server running on:', port)
 })
-
-module.exports = { server }
