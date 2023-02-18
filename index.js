@@ -2,7 +2,13 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const http = require('http');
-const server = http.createServer(app)
+const server = http.createServer(app, (req, res) => {
+	res.writeHead(204, {
+		'Access-Control-Allow-Origin': '*',
+	})
+	res.end();
+	return;
+})
 const { Server } = require('socket.io')
 global.io = new Server(server, {
 	cors: {
