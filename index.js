@@ -8,7 +8,16 @@ global.io = new Server(server, {
 	cors: {
 		origin: ["*"],
 		methods: ["GET", "POST", "PUT", "DELETE"],
-		credentials: true
+		credentials: true,
+		handlePreflightRequest: (req, res) => {
+			res.writeHead(200, {
+				"Access-Control-Allow-Origin": "*",
+				"Access-Control-Allow-Methods": "GET,POST",
+				"Access-Control-Allow-Headers": "token",
+				"Access-Control-Allow-Credentials": true
+			});
+			res.end();
+		}
 	}
 })
 require("dotenv").config();
