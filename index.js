@@ -7,8 +7,6 @@ const { Server } = require('socket.io')
 global.io = new Server(server, {
 	cors: {
 		origin: ["*"],
-		methods: ["GET", "POST", "PUT", "DELETE"],
-		credentials: true,
 		handlePreflightRequest: (req, res) => {
 			res.writeHead(200, {
 				"Access-Control-Allow-Origin": "*",
