@@ -47,8 +47,18 @@ exports.getAllCandidate = async (req, res) => {
 exports.getCandidateById = async (req, res) => {
 	const id = req.params.id;
 	const query = { _id: ObjectId(id) };
-	const result = await usersCollection.findOne(query);
-	res.send(result);
+	const result = await usersCollection.aggregate([
+		{
+			$match: {
+				_id: ObjectId(id)
+			}
+		},
+		{
+			$unset: 'ip'
+		}
+	]).toArray();
+	result.map(singleResult => res.send(singleResult));
+	// res.send(result);
 };
 
 exports.updateCandidateProfile = async (req, res) => {
@@ -64,11 +74,17 @@ exports.updateCandidateProfile = async (req, res) => {
 };
 
 exports.applyToJob = async (req, res) => {
-	const jobReq = req.body;
+	const jobReq = {...req.body};
 	jobReq.applyDate = new Date();
 	jobReq.candidateId = ObjectId(req.decoded)
 	jobReq.companyId = ObjectId(jobReq.companyId)
 	jobReq.applyDate = new Date();
+	const specificClients = socketClients.filter(client => req.body.companyId === client.id)
+	const userInfo = await usersCollection.findOne({_id: jobReq.candidateId})
+	specificClients.map(client => {
+		console.log(client)
+		io.to(client.socketId).emit('notification', `${userInfo.fullName} applied to your job`)
+	})
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	res.send(saveJobApply)
 };
