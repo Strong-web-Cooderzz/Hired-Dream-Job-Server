@@ -1,6 +1,10 @@
 const express = require("express");
 const app = express();
+const http = require('http');
+const server = http.createServer(app)
 const cors = require("cors");
+const { Server } = require('socket.io')
+const io = new Server(server)
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
@@ -39,9 +43,15 @@ app.use(stripeRoute);
 
 app.get('/', (req, res) => {
 	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-	res.send(`Your ip address is ${ip}` );
+	res.send(`Your ip address is ${ip}`);
 });
 
-app.listen(port, () => {
+io.on('connection', socket => {
+	socket.emit('hello', 'Abid Hasan')
+})
+
+server.listen(port, () => {
 	console.log('server running on:', port)
 })
+
+module.exports = { server }
