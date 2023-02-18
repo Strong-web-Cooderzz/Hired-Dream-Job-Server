@@ -4,7 +4,13 @@ const cors = require("cors");
 const http = require('http');
 const server = http.createServer(app)
 const { Server } = require('socket.io')
-global.io = new Server(server)
+global.io = new Server(server, {
+	cors: {
+		origin: "https://hired-dream-job.vercel.app",
+		methods: ["GET", "POST", "PUT", "DELETE"],
+		credentials: true
+	}
+})
 require("dotenv").config();
 const { getAuth } = require("firebase-admin/auth");
 const { adminApp } = require('./middlewares/verifyJWT');
@@ -49,7 +55,6 @@ app.get('/', (req, res) => {
 	res.send(`Your ip address is ${ip}`);
 });
 
-io.origins('*:*')
 // this verifies connection
 io.use((socket, next) => {
 	const token = socket.handshake.auth.token;
