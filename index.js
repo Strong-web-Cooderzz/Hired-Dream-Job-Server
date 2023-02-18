@@ -6,7 +6,7 @@ const server = http.createServer(app)
 const { Server } = require('socket.io')
 global.io = new Server(server, {
 	cors: {
-		origin: "*",
+		origin: ["*"],
 		methods: ["GET", "POST", "PUT", "DELETE"],
 		credentials: true
 	}
