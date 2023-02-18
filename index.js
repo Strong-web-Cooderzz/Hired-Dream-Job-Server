@@ -6,16 +6,7 @@ const server = http.createServer(app)
 const { Server } = require('socket.io')
 global.io = new Server(server, {
 	cors: {
-		origin: ["*"],
-		handlePreflightRequest: (req, res) => {
-			res.writeHead(200, {
-				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Methods": "GET,POST",
-				"Access-Control-Allow-Headers": "token",
-				"Access-Control-Allow-Credentials": true
-			});
-			res.end();
-		}
+		origin: "*",
 	}
 })
 require("dotenv").config();
