@@ -2,19 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const http = require('http');
-const server = http.createServer(app, (req, res) => {
-	res.writeHead(204, {
-		'Access-Control-Allow-Origin': '*',
-	})
-	res.end();
-	return;
-})
+const server = http.createServer(app)
 const { Server } = require('socket.io')
-global.io = new Server(server, {
-	cors: {
-		origin: "*",
-	}
-})
+global.io = new Server(server)
 require("dotenv").config();
 const { getAuth } = require("firebase-admin/auth");
 const { adminApp } = require('./middlewares/verifyJWT');
