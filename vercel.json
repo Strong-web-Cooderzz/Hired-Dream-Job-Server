@@ -11,5 +11,13 @@
 			"src": "/(.*)",
 			"dest": "/"
 		}
+	],
+	"headers": [
+		{
+			"source": "socket.io",
+			"headers": [
+				{"key": "Access-Control-Allow-Origin", "value": "*"}
+			]
+		}
 	]
 }
