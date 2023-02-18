@@ -80,10 +80,9 @@ exports.applyToJob = async (req, res) => {
 	jobReq.companyId = ObjectId(jobReq.companyId)
 	jobReq.applyDate = new Date();
 	const specificClients = socketClients.filter(client => req.body.companyId === client.id)
-	const userInfo = await usersCollection.findOne({_id: jobReq.candidateId})
 	specificClients.map(client => {
 		console.log(client)
-		io.to(client.socketId).emit('notification', `${userInfo.fullName} applied to your job`)
+		io.to(client.socketId).emit('notification', `applied to your job`)
 	})
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	res.send(saveJobApply)
