@@ -4,7 +4,13 @@ const cors = require("cors");
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-global.io = new Server(server);
+global.io = new Server(server, {
+	cors: {
+		origin: "*",
+		credentials: true,
+	},
+});
+
 require("dotenv").config();
 const { getAuth } = require("firebase-admin/auth");
 const { adminApp } = require("./middlewares/verifyJWT");
