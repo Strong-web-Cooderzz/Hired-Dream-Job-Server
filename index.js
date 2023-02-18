@@ -6,7 +6,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 global.io = new Server(server, {
 	cors: {
-		origin: "*",
+		origin: "http://localhost:5173",
 		credentials: true,
 	},
 });
