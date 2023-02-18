@@ -4,8 +4,15 @@ const cors = require("cors");
 const http = require('http');
 const server = http.createServer(app)
 const { Server } = require('socket.io')
-global.io = new Server(server)
+global.io = new Server(server, {
+	cors: {
+		origin: '*'
+	}
+})
 require("dotenv").config();
+const { getAuth } = require("firebase-admin/auth");
+const { adminApp } = require('./middlewares/verifyJWT');
+const socketClients = require('./routes/socket.route')
 
 const port = process.env.PORT || 5000;
 
@@ -45,6 +52,28 @@ app.get('/', (req, res) => {
 	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 	res.send(`Your ip address is ${ip}`);
 });
+
+io.use(cors())
+// this verifies connection
+io.use((socket, next) => {
+	const token = socket.handshake.auth.token;
+
+	if (token) {
+		getAuth(adminApp)
+			.verifyIdToken(token, true)
+			.then(payload => {
+				socketClients.push({uid: payload.uid, socketId: socket.id})
+				next()
+			})
+			.catch(() => {
+				io.disconnect()
+			})
+	}
+})
+
+io.on('connection', socket => {
+	console.log('A new connection')
+})
 
 server.listen(port, () => {
 	console.log('server running on:', port)
