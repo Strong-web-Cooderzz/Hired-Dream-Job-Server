@@ -63,6 +63,7 @@ io.use((socket, next) => {
 			.verifyIdToken(token, true)
 			.then((payload) => {
 				socketClients.push({ uid: payload.uid, socketId: socket.id });
+				console.log(payload, socketClients, socket.id)
 				// console.log(socket.id)
 				// console.log(socketClients)
 				next();
