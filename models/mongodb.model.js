@@ -21,4 +21,5 @@ const postsCollection = client.db("hired-job").collection("blogPosts");
 const commentsCollection = client.db('hired-job').collection('comments')
 const likesCollection = database.collection('likes')
 
+
 module.exports = { jobsCollection, ObjectId, categoriesCollection, tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection, commentsCollection, likesCollection };

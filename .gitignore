@@ -13,6 +13,8 @@ dist-ssr
 *.local
 
 /yarn.lock
+/serviceKeyAccount.json
+
 /serviceAccountKey.json
 .env
 

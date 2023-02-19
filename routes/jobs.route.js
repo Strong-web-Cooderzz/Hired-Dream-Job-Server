@@ -2,9 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 
+
 const { getAllJobs, getJobByEmail, getJobsById, postJob, updateJob, deleteJob, searchJobs, updateJobVisibility, myAppliedJobs, getFeaturedJobs, jobCounter, jobCounterByCategory, PostFeaturedJobs, featuredJob, deleteFeaturedJob,jobCounterByCities } = require('../controllers/jobs.controller');
 const verifyJWT = require('../middlewares/verifyJWT');
 
+
+
+// get all jobs by type
+router.get('/jobs', getAllJobsByType)
 
 // get all jobs
 router.get('/jobs', getAllJobs)
