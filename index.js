@@ -55,28 +55,23 @@ app.get("/", (req, res) => {
 });
 
 // this verifies connection
-// io.use((socket, next) => {
-// 	const token = socket.handshake.auth.token;
-//
-// 	if (token) {
-// 		getAuth(adminApp)
-// 			.verifyIdToken(token, true)
-// 			.then((payload) => {
-// 				socketClients.push({ uid: payload.uid, socketId: socket.id });
-// 				// console.log(payload, socketClients, socket.id)
-// 				// console.log(socket.id)
-// 				// console.log(socketClients)
-// 				next();
-// 			})
-// 			.catch(() => {
-// 				io.disconnect();
-// 			});
-// 	}
-// });
+io.use((socket, next) => {
+	const token = socket.handshake.auth.token;
+
+	if (token) {
+		getAuth(adminApp)
+			.verifyIdToken(token, true)
+			.then((payload) => {
+				global.socketClients.push({ uid: payload.uid, socketId: socket.id });
+				next();
+			})
+			.catch(() => {
+				io.disconnect();
+			});
+	}
+});
 
 io.on("connection", (socket) => {
-	socketClients.push({ uid: socket.handshake.auth.uid, socketId: socket.id })
-	console.log(socketClients)
 	console.log("A new connection");
 });
 
