@@ -6,7 +6,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 global.io = new Server(server, {
 	cors: {
-		origin: "http://localhost:5173",
+		origin: "*",
 	},
 });
 
@@ -31,6 +31,10 @@ const stripeRoute = require("./routes/stripe.route");
 
 // middleware
 app.use(cors());
+app.use((req, res, next) => {
+	req.header("Access-Control-Allow-Origin", "*");
+	next();
+});
 app.use(express.json());
 
 // using route
