@@ -62,6 +62,7 @@ io.use((socket, next) => {
 		getAuth(adminApp)
 			.verifyIdToken(token, true)
 			.then((payload) => {
+				console.log(payload.uid)
 				global.socketClients.push({ uid: payload.uid, socketId: socket.id });
 				next();
 			})
