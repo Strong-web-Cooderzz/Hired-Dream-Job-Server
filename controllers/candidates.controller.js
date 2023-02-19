@@ -78,6 +78,7 @@ exports.applyToJob = async (req, res) => {
 	jobReq.candidateId = ObjectId(req.decoded)
 	jobReq.companyId = ObjectId(jobReq.companyId)
 	jobReq.applyDate = new Date();
+	console.log(socketClients)
 	const specificClients = socketClients.filter(client => req.body.companyId === client.uid)
 	const userInfo = await usersCollection.findOne({_id: jobReq.candidateId})
 	specificClients.map(client => {
