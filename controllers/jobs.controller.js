@@ -1,4 +1,4 @@
-const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId } = require('../models/mongodb.model');
+const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId, usersCollection } = require('../models/mongodb.model');
 
 exports.getAllJobs = async (req, res) => {
 	const limit = Number(req.query.limit);
@@ -27,11 +27,14 @@ exports.jobCounter = async (_, res) => {
 exports.jobCounterByCategory = async (_, res) => {
 	const result = await jobsCollection.aggregate([
 		{
+			$match: { isVisible: true }
+		},
+		{
 			$group: {
 				_id: "$category",
 				count: { $sum: 1 }
 			}
-		}
+		},
 	]).toArray();
 	res.send(result)
 }
@@ -39,7 +42,7 @@ exports.jobCounterByCategory = async (_, res) => {
 
 
 exports.jobCounterByCities = async (_, res) => {
-	const result= await jobsCollection.aggregate([
+	const result = await jobsCollection.aggregate([
 		{
 			$group: {
 				_id: "$category",
@@ -60,7 +63,7 @@ exports.getFeaturedJobs = async (req, res) => {
 
 exports.featuredJob = async (req, res) => {
 	const id = req.params.id
-	const result = await featuredJobCollection.findOne({_id: id})
+	const result = await featuredJobCollection.findOne({ _id: id })
 	res.send(result);
 };
 
@@ -68,7 +71,7 @@ exports.featuredJob = async (req, res) => {
 
 exports.deleteFeaturedJob = async (req, res) => {
 	const id = req.params.id
-	const result = await featuredJobCollection.deleteOne({_id: id})
+	const result = await featuredJobCollection.deleteOne({ _id: id })
 	res.send(result);
 };
 
@@ -81,7 +84,7 @@ exports.PostFeaturedJobs = async (req, res) => {
 
 exports.myAppliedJobs = async (req, res) => {
 	const id = req.params.id;
-	const query = { candidateId: id };
+	const query = { companyId: ObjectId(id) };
 	const appliedJobPost = await applyJobCollection.find(query).toArray();
 	res.send(appliedJobPost);
 };
@@ -95,15 +98,31 @@ exports.getJobByEmail = async (req, res) => {
 
 exports.getJobsById = async (req, res) => {
 	const id = req.params.id;
-	const query = { _id: ObjectId(id) };
-	const result = await jobsCollection.findOne(query);
+	const result = await jobsCollection.aggregate([
+		{
+			$match: { _id: ObjectId(id) }
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'companyId',
+				foreignField: '_id',
+				as: 'company'
+			}
+		},
+		{
+			$unwind: '$company'
+		}
+	]).toArray();
 	res.send(result);
 };
 
 exports.postJob = async (req, res) => {
 	const jobBody = req.body;
 	const date = new Date();
+	const companyId = ObjectId(req.decoded)
 	jobBody.postTime = date;
+	jobBody.companyId = companyId;
 	const result = await jobsCollection.insertOne(jobBody);
 	res.send(result);
 };
@@ -194,15 +213,54 @@ exports.searchJobs = async (req, res) => {
 	}
 	const perPage = Number(query["per-page"]);
 	const pageNumber = parseInt(query.page);
-	const result = await jobsCollection.find({
+	const result = {};
+	// result.data = await jobsCollection.find({
+	// 	$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
+	// 	"location": locationRe,
+	// 	"jobType": jobType,
+	// 	"postTime": { "$gte": new Date(time) },
+	// 	"isVisible": true,
+	// 	category: categoryRe
+	// }).sort({
+	// 	"postTime": newest
+	// }).limit(perPage).skip((pageNumber - 1) * perPage).toArray();
+	const skip = Number((pageNumber - 1) * perPage);
+	result.data = await jobsCollection.aggregate([
+		{
+			$match: {
+				$or: [{ title: searchRe }, { jobDescription: desRe }, { company: companyRe }],
+				location: locationRe,
+				"jobType": jobType,
+				"postTime": { "$gte": new Date(time) },
+				"isVisible": true,
+				category: categoryRe
+			}
+		},
+		{
+			$sort: { postTime: newest }
+		},
+		{
+			$skip: skip
+		},
+		{
+			$limit: perPage
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'companyId',
+				foreignField: '_id',
+				as: 'company'
+			}
+		},
+	]).toArray();
+	result.count = await jobsCollection.countDocuments({
 		$or: [{ "title": searchRe }, { "jobDescription": desRe }, { "company": companyRe }],
 		"location": locationRe,
 		"jobType": jobType,
 		"postTime": { "$gte": new Date(time) },
 		"isVisible": true,
 		category: categoryRe
-	}).sort({
-		"postTime": newest
-	}).limit(perPage).skip((pageNumber - 1) * perPage).toArray();
+	})
 	res.send(result);
 };

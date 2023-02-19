@@ -1,13 +1,26 @@
-const { postsCollection, ObjectId, commentsCollection } = require('../models/mongodb.model');
+const { postsCollection, ObjectId, commentsCollection, usersCollection } = require('../models/mongodb.model');
 
 exports.blogPosts = async (req, res) => {
-	const result = await postsCollection.find({}).toArray();
-	res.send(result);
+	const result = await postsCollection.aggregate([
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'author',
+				foreignField: '_id',
+				as: 'author'
+			}
+		},
+		{
+			$unwind: '$author'
+		}
+	]).toArray();
+	res.send(result)
 };
 
 exports.postBlog = async (req, res) => {
 	const post = req.body;
 	post.date = new Date();
+	post.author = ObjectId(req.decoded)
 	const result = await postsCollection.insertOne(post);
 	res.send(result);
 };
@@ -19,6 +32,17 @@ exports.blogPost = async (req, res) => {
 			$match: {
 				_id: ObjectId(id)
 			}
+		},
+		{
+			$lookup: {
+				from: "users",
+				localField: "author",
+				foreignField: "_id",
+				as: "author"
+			}
+		},
+		{
+			$unwind: "$author"
 		},
 		{
 			$lookup: {
@@ -78,11 +102,27 @@ exports.deletePost = async (req, res) => {
 
 exports.postComment = async (req, res) => {
 	const comment = req.body;
-	if (comment.userId && comment.postId && comment.comment) {
-		const newComment = { userId: ObjectId(comment.userId), postId: ObjectId(comment.postId), comment: comment.comment }
+	const userId = ObjectId(req.decoded)
+	if (userId && comment.postId && comment.comment) {
+		const newComment = { userId, postId: ObjectId(comment.postId), comment: comment.comment, date: new Date() }
 		const result = await commentsCollection.insertOne(newComment);
 		res.send(result)
 	} else {
 		return
 	}
+}
+
+exports.deleteComment = async (req, res) => {
+	const userId = ObjectId(req.decoded)
+	const commentId = ObjectId(req.query.commentId)
+	const result = await commentsCollection.deleteOne({ _id: commentId, userId })
+	if (result.acknowledged) {
+		res.json({ success: true });
+	} else {
+		res.json({ success: false });
+	}
+}
+
+exports.postLike = async (req, res) => {
+	const userId = ObjectId(req.decoded)
 }

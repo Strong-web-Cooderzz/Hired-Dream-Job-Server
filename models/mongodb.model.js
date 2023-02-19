@@ -8,6 +8,8 @@ const client = new MongoClient(uri, {
 	serverApi: ServerApiVersion.v1,
 });
 
+const database = client.db('hired-job');
+
 //================= Database all collection part ====================//
 const jobsCollection = client.db("hired-job").collection("jobs");
 const usersCollection = client.db("hired-job").collection("users");
@@ -17,5 +19,7 @@ const categoriesCollection = client.db("hired-job").collection("blogCategories")
 const tagsCollection = client.db("hired-job").collection("blogTags");
 const postsCollection = client.db("hired-job").collection("blogPosts");
 const commentsCollection = client.db('hired-job').collection('comments')
+const likesCollection = database.collection('likes')
 
-module.exports = { jobsCollection, ObjectId, categoriesCollection, tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection, commentsCollection ,stripe};
+
+module.exports = { jobsCollection, ObjectId, categoriesCollection, tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection, commentsCollection, likesCollection };

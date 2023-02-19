@@ -15,6 +15,9 @@ dist-ssr
 /yarn.lock
 /serviceKeyAccount.json
 
+/serviceAccountKey.json
+.env
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
