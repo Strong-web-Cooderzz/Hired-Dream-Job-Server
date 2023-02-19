@@ -75,14 +75,14 @@ exports.updateCandidateProfile = async (req, res) => {
 
 exports.applyToJob = async (req, res) => {
 	const jobReq = {...req.body};
-	jobReq.applyDate = new Date();
 	jobReq.candidateId = ObjectId(req.decoded)
 	jobReq.companyId = ObjectId(jobReq.companyId)
 	jobReq.applyDate = new Date();
-	const specificClients = socketClients.filter(client => req.body.companyId === client.id)
+	const specificClients = socketClients.filter(client => req.body.companyId === client.uid)
+	const userInfo = await usersCollection.findOne({_id: jobReq.candidateId})
 	specificClients.map(client => {
 		console.log(client)
-		io.to(client.socketId).emit('notification', `applied to your job`)
+		io.to(client.socketId).emit('notification', `${userInfo.fullName} applied to your job`)
 	})
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	res.send(saveJobApply)
