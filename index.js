@@ -64,9 +64,12 @@ io.use((socket, next) => {
 			.then((payload) => {
 				// console.log(payload)
 				global.socketClients.push({ uid: payload.uid, userName: payload.name, socketId: socket.id });
+				socket.join(payload.uid)
+				// console.log(io.sockets.adapter.rooms[socket.id])
 				next();
 			})
-			.catch(() => {
+			.catch(err => {
+				console.log(err)
 				socket.disconnect();
 			});
 	}
@@ -74,10 +77,33 @@ io.use((socket, next) => {
 
 io.on("connection", (socket) => {
 	console.log("A new connection");
+	const rooms = socket.adapter.rooms
+	console.log('rooms', rooms)
 	socket.on('disconnect', () => {
-		socketClients = socketClients.filter(client => socket.id !== client.socketId)
+		console.log('someone disconnected')
+		// console.log('disconnected rooms', rooms)
+		// console.log(test)
+		// for (let [i, j] of rooms) {
+		// 	console.log(rooms, i, j, socket.id)
+		// 	if (j.has(socket.id)) {
+		// 		console.log(`someone disconnected`)
+		// 		socket.leave(i)
+		// 		console.log(`${socket.id} disconnected`)
+		// 		console.log('rooms', rooms)
+		// 	}
+		// }
+
 	})
+
+	// console.log(io.sockets.adapter.ma)
+	// socket.on('disconnect', () => {
+	// 	// socketClients = socketClients.filter(client => socket.id !== client.socketId)
+	// })
 });
+//
+// io.on("disconnect", socket => {
+// 	socket.leave()
+// })
 
 server.listen(port, () => {
 	console.log("server running on:", port);

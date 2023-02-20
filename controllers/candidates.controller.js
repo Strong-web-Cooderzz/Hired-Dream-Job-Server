@@ -79,12 +79,13 @@ exports.applyToJob = async (req, res) => {
 	jobReq.companyId = ObjectId(jobReq.companyId)
 	jobReq.applyDate = new Date();
 	// console.log(socketClients)
-	const specificClients = socketClients.filter(client => req.body.companyId === client.uid)
+	// const specificClients = socketClients.filter(client => req.body.companyId === client.uid)
 	const userInfo = socketClients.filter(client => req.decoded === client.uid)
-	specificClients.map(client => {
-		// console.log(client)
-		io.to(client.socketId).emit('notification', `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`)
-	})
+	io.to(req.body.companyId).emit('notification', `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`)
+	// specificClients.map(client => {
+	// 	// console.log(client)
+	// 	io.to(client.socketId).emit('notification', `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`)
+	// })
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	await notificationsCollection.insertOne({
 		userId: jobReq.companyId,
