@@ -1,7 +1,6 @@
 const router = require('express').Router();
 
-
-const { getUserByEmail, insertUser, updateUser, getUserByType, registerUser, login, deleteUser, getAllUsers } = require('../controllers/users.controller');
+const { getUserByEmail, insertUser, updateUser, getUserByType, registerUser, login, deleteUser, getAllUsers, notifications } = require('../controllers/users.controller');
 const verifyJWT = require('../middlewares/verifyJWT');
 
 // get all users
@@ -27,5 +26,8 @@ router.put("/user", verifyJWT, updateUser);
 
 // delete a user
 router.delete('/delete-user', verifyJWT, deleteUser)
+
+// notifications
+router.get('/notifications', verifyJWT, notifications)
 
 module.exports = router;

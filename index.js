@@ -67,7 +67,7 @@ io.use((socket, next) => {
 				next();
 			})
 			.catch(() => {
-				io.disconnect();
+				socket.disconnect();
 			});
 	}
 });

@@ -1,6 +1,6 @@
 const { getAuth } = require("firebase-admin/auth");
 const { adminApp } = require("../middlewares/verifyJWT");
-const { usersCollection, ObjectId } = require("../models/mongodb.model");
+const { usersCollection, ObjectId, notificationsCollection } = require("../models/mongodb.model");
 
 exports.getUserByEmail = async (req, res) => {
   const email = req.query.email;
@@ -158,3 +158,23 @@ exports.deleteUser = async (req, res) => {
       }
     });
 };
+
+exports.notifications = async (req, res) => {
+	const limit = 5;
+	const skip = Number(req.query.skip) * limit
+	const result = await notificationsCollection.aggregate([
+		{
+			$match: {
+				userId: ObjectId(req.decoded)
+			},
+		},
+		{
+			$skip: skip
+		},
+		{
+
+			$limit: limit
+		}
+	]).toArray();
+	res.send(result);
+}

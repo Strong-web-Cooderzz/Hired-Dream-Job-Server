@@ -1,4 +1,4 @@
-const { usersCollection, applyJobCollection, ObjectId } = require('../models/mongodb.model');
+const { usersCollection, applyJobCollection, ObjectId, notificationsCollection } = require('../models/mongodb.model');
 
 exports.getAllCandidate = async (req, res) => {
 	const returnRegex = value => {
@@ -19,15 +19,15 @@ exports.getAllCandidate = async (req, res) => {
 	if (location && segment) {
 		location = returnRegex(location)
 		segment = returnRegex(segment)
-		andArray = [{$or: [{'address.city': location}, {'address.country': location}]}, {'segment': segment}]
+		andArray = [{ $or: [{ 'address.city': location }, { 'address.country': location }] }, { 'segment': segment }]
 	} else if (location) {
 		location = returnRegex(location)
-		andArray = [{$or: [{'address.city': location}, {'address.country': location}]}]
+		andArray = [{ $or: [{ 'address.city': location }, { 'address.country': location }] }]
 	} else if (segment) {
 		segment = returnRegex(segment)
-		andArray = [{'segment': segment}]
-	} else if(!location) {
-		andArray = [{$or: [{'address': {$exists: true}}, {'address': {$exists: false}}]}]
+		andArray = [{ 'segment': segment }]
+	} else if (!location) {
+		andArray = [{ $or: [{ 'address': { $exists: true } }, { 'address': { $exists: false } }] }]
 	}
 
 	const result = await usersCollection.aggregate([
@@ -74,7 +74,7 @@ exports.updateCandidateProfile = async (req, res) => {
 };
 
 exports.applyToJob = async (req, res) => {
-	const jobReq = {...req.body};
+	const jobReq = { ...req.body };
 	jobReq.candidateId = ObjectId(req.decoded)
 	jobReq.companyId = ObjectId(jobReq.companyId)
 	jobReq.applyDate = new Date();
@@ -83,9 +83,13 @@ exports.applyToJob = async (req, res) => {
 	const userInfo = socketClients.filter(client => req.decoded === client.uid)
 	specificClients.map(client => {
 		// console.log(client)
-		io.to(client.socketId).emit('notification', `${userInfo[0].userName} applied to your job`)
+		io.to(client.socketId).emit('notification', `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`)
 	})
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
+	await notificationsCollection.insertOne({
+		userId: jobReq.companyId,
+		notification: `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`
+	})
 	res.send(saveJobApply)
 };
 
