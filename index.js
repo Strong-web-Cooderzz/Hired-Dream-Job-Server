@@ -74,6 +74,9 @@ io.use((socket, next) => {
 
 io.on("connection", (socket) => {
 	console.log("A new connection");
+	socket.on('disconnect', () => {
+		socketClients = socketClients.filter(client => socket.id !== client.socketId)
+	})
 });
 
 server.listen(port, () => {
