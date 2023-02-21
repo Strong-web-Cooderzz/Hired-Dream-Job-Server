@@ -78,7 +78,7 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
 	console.log("A new connection");
 	const rooms = socket.adapter.rooms
-	console.log('rooms', rooms)
+	// console.log('rooms', rooms)
 	socket.on('disconnect', () => {
 		console.log('someone disconnected')
 		// console.log('disconnected rooms', rooms)

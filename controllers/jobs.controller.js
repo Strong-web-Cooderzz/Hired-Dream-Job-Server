@@ -12,8 +12,8 @@ exports.getAllJobs = async (req, res) => {
 };
 
 exports.getAllJobsByType = async (req, res) => {
-	const type = req.query.type==='true';
-	const filter = {isVisible: type}
+	const type = req.query.type === 'true';
+	const filter = { isVisible: type }
 	const result = await jobsCollection.find(filter).toArray();
 	res.send(result);
 }
@@ -264,3 +264,18 @@ exports.searchJobs = async (req, res) => {
 	})
 	res.send(result);
 };
+
+exports.deleteJobByAdmin = (req, res) => {
+	const adminId = req.decoded;
+	const jobId = req.query['job-id'];
+	usersCollection
+		.findOne({ _id: ObjectId(adminId), type: "Admin" })
+		.then(async (isUserAdmin) => {
+			if (isUserAdmin) {
+				const result = await jobsCollection.deleteOne({ _id: ObjectId(jobId) })
+				if (result.acknowledged) res.json({acknowledged: true})
+			} else {
+				res.sendStatus(401)
+			}
+		})
+}
