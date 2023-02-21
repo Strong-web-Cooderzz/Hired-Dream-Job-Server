@@ -119,7 +119,11 @@ exports.registerUser = async (req, res) => {
 										user.token = customToken;
 										res.send(user);
 									})
-									.catch((err) => console.log(err));
+									.catch(async (err) => {
+										console.log(err)
+										await usersCollection.deleteOne({_id: ObjectId(result.insertedId)})
+										res.send(err)
+									});
 							})
 							.catch((err) => console.log(err));
 					}
