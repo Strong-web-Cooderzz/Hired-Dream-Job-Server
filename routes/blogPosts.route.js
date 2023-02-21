@@ -18,7 +18,7 @@ router.patch("/editPost/:id", editPost);
 router.post('/postBlog', verifyJWT, postBlog);
 
 // ------delete blog ---------\\
-router.delete('/deletePost/:id', deletePost);
+router.delete('/deletePost/:id', verifyJWT, deletePost);
 
 // post comment on blog post
 router.post('/post-comment', verifyJWT, postComment)

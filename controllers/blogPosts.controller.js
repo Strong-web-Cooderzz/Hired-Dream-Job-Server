@@ -93,11 +93,19 @@ exports.blogUserEmail = async (req, res) => {
 };
 
 exports.deletePost = async (req, res) => {
+	const adminId = req.decoded;
 	const id = req.params.id
-	console.log(id)
-	const filter = { _id: ObjectId(id) }
-	const result = await postsCollection.deleteOne(filter);
-	res.send(result);
+	usersCollection
+		.findOne({ _id: ObjectId(adminId), type: "Admin" })
+		.then(async (isUserAdmin) => {
+			if (isUserAdmin) {
+				const filter = { _id: ObjectId(id) }
+				const result = await postsCollection.deleteOne(filter);
+				if (result.acknowledged) res.json({ acknowledged: true })
+			} else {
+				res.sendStatus(401)
+			}
+		})
 };
 
 exports.postComment = async (req, res) => {
