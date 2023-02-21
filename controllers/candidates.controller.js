@@ -81,7 +81,7 @@ exports.applyToJob = async (req, res) => {
 	// console.log(socketClients)
 	// const specificClients = socketClients.filter(client => req.body.companyId === client.uid)
 	const userInfo = socketClients.filter(client => req.decoded === client.uid)
-	io.to(req.body.companyId).emit('notification', `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`)
+	io.to(req.body.companyId).emit('notification', `${userInfo[0].userName || 'Someone'} applied to your job ${jobReq.jobTitle}`)
 	// specificClients.map(client => {
 	// 	// console.log(client)
 	// 	io.to(client.socketId).emit('notification', `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`)
