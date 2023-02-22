@@ -20,8 +20,19 @@ exports.getAllJobsByType = async (req, res) => {
 
 
 exports.jobCounter = async (_, res) => {
-	const result = await jobsCollection.countDocuments();
-	res.send(result.toString());
+	// const result = await jobsCollection.countDocuments();
+	const result = await jobsCollection.aggregate([
+		{
+			$match: {isVisible: true}
+		},
+		{
+			$group: {
+				_id: '_id',
+				count: {$sum :1}
+			}
+		}
+	]).toArray()
+	res.send(result);
 }
 
 exports.jobCounterByCategory = async (_, res) => {
