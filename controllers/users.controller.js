@@ -44,16 +44,16 @@ exports.updateUser = async (req, res) => {
 		delete userData["email"];
 		userData.ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 		const filter = { _id: ObjectId(id) };
-		const option = { upsert: true };
+		// const option = { upsert: true };
 		const updateUser = {
 			$set: userData,
 		};
-		const result = await usersCollection.updateOne(filter, updateUser, option);
+		const result = await usersCollection.updateOne(filter, updateUser);
 		if (result.acknowledged) {
 			getAuth(adminApp)
 				.updateUser(id, {
 					displayName: userData.fullName,
-					phoneNumber: userData.phoneNumber,
+					// phoneNumber: userData.phoneNumber,
 					photoURL: userData.photo,
 				})
 				.then((userRecord) => {
