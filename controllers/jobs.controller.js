@@ -55,7 +55,21 @@ exports.jobCounterByCities = async (_, res) => {
 
 // Get featured Job
 exports.getFeaturedJobs = async (req, res) => {
-	const result = await featuredJobCollection.find({}).limit(8).toArray();
+	const result = await featuredJobCollection.aggregate([
+		
+		{
+			$lookup: {
+				from: 'jobs',
+				localField: 'jobId',
+				foreignField: '_id',
+				as: 'job'
+			}
+		},
+		{
+			$unwind: '$job'
+		}
+	]).toArray()
+	console.log(result)
 	res.send(result);
 };
 
@@ -63,7 +77,22 @@ exports.getFeaturedJobs = async (req, res) => {
 
 exports.featuredJob = async (req, res) => {
 	const id = req.params.id
-	const result = await featuredJobCollection.findOne({ _id: id })
+	const result = await featuredJobCollection.aggregate([
+		{
+			$match: {
+				_id: ObjectId(id)
+			}
+		},
+		{
+			$lookup: {
+				from: 'featuredJob',
+				localField: 'jobId',
+				foreignField: '_id',
+				as: 'job'
+			}
+		}
+	]).toArray()
+	console.log(result)
 	res.send(result);
 };
 
@@ -78,7 +107,9 @@ exports.deleteFeaturedJob = async (req, res) => {
 // Post Featured Job
 exports.PostFeaturedJobs = async (req, res) => {
 	const featured = req.body;
-	const result = await featuredJobCollection.insertOne(featured);
+	const jobId = {jobId:ObjectId(req.body.jobId)}
+	console.log(jobId)
+	const result = await featuredJobCollection.insertOne(jobId);
 	res.send(result);
 };
 

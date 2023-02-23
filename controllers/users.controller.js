@@ -36,9 +36,8 @@ exports.getUserByType = async (req, res) => {
 exports.updateUser = async (req, res) => {
 	const id = req.decoded;
 	const userData = req.body;
-	if (userData.type !== "Candidate" || userData.type !== "Agency") {
-		res.status(401);
-	} else {
+	console.log(id,userData)
+	
 		// user can not change their email
 		delete userData["email"];
 		userData.ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
@@ -48,19 +47,20 @@ exports.updateUser = async (req, res) => {
 			$set: userData,
 		};
 		const result = await usersCollection.updateOne(filter, updateUser, option);
+		// console.log(result)
 		if (result.acknowledged) {
 			getAuth(adminApp)
 				.updateUser(id, {
 					displayName: userData.fullName,
-					phoneNumber: userData.phoneNumber,
-					photoURL: userData.photo,
+					// phoneNumber: userData.phoneNumber,
+					photoURL: 'userData.photo',
 				})
 				.then((userRecord) => {
 					res.send(result);
 				})
 				.catch((err) => console.log(err));
 		}
-	}
+	
 };
 
 exports.registerUser = async (req, res) => {
