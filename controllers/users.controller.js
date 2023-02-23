@@ -69,7 +69,7 @@ exports.registerUser = async (req, res) => {
 	const name = req.body.fullName;
 	const photo = req.body.photo;
 	let type = req.body.type;
-	if (type !== "Agency" || type !== "Candidate") {
+	if (type !== "Agency" && type !== "Candidate") {
 		type = "Candidate";
 	}
 	const password = req.body.password;
