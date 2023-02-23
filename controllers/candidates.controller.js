@@ -81,7 +81,7 @@ exports.applyToJob = async (req, res) => {
 	// console.log(socketClients)
 	// const specificClients = socketClients.filter(client => req.body.companyId === client.uid)
 	const userInfo = socketClients.filter(client => req.decoded === client.uid)
-	io.to(req.body.companyId).emit('notification', `${userInfo[0].userName || 'Someone'} applied to your job ${jobReq.jobTitle}`)
+	io.to(req.body.companyId).emit('notification', `${userInfo[0]?.userName || 'Someone'} applied to your job ${jobReq.jobTitle}`)
 	// specificClients.map(client => {
 	// 	// console.log(client)
 	// 	io.to(client.socketId).emit('notification', `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`)
@@ -89,14 +89,14 @@ exports.applyToJob = async (req, res) => {
 	const saveJobApply = await applyJobCollection.insertOne(jobReq);
 	await notificationsCollection.insertOne({
 		userId: jobReq.companyId,
-		notification: `${userInfo[0].userName} applied to your job ${jobReq.jobTitle}`
+		notification: `${userInfo[0]?.userName || 'Someone'} applied to your job ${jobReq.jobTitle}`
 	})
 	res.send(saveJobApply)
 };
 
 exports.getAppliedCandidateByEmail = async (req, res) => {
-	const email = req.params.email;
-	const query = { companyEmail: email }
+	const id = req.decoded;
+	const query = { companyId:ObjectId(id)}
 	const appliedCandidate = await applyJobCollection.find(query).toArray()
 	res.send(appliedCandidate)
 }
