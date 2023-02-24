@@ -1,4 +1,5 @@
-const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId, usersCollection } = require('../models/mongodb.model');
+const { jobsCollection, applyJobCollection, featuredJobCollection, ObjectId, usersCollection, meetingsCollection } = require('../models/mongodb.model');
+const { v4: uuidv4 } = require('uuid')
 
 exports.getAllJobs = async (req, res) => {
 	const limit = Number(req.query.limit);
@@ -23,12 +24,12 @@ exports.jobCounter = async (_, res) => {
 	// const result = await jobsCollection.countDocuments();
 	const result = await jobsCollection.aggregate([
 		{
-			$match: {isVisible: true}
+			$match: { isVisible: true }
 		},
 		{
 			$group: {
 				_id: '_id',
-				count: {$sum :1}
+				count: { $sum: 1 }
 			}
 		}
 	]).toArray()
@@ -67,7 +68,7 @@ exports.jobCounterByCities = async (_, res) => {
 // Get featured Job
 exports.getFeaturedJobs = async (req, res) => {
 	const result = await featuredJobCollection.aggregate([
-		
+
 		{
 			$lookup: {
 				from: 'jobs',
@@ -117,7 +118,7 @@ exports.deleteFeaturedJob = async (req, res) => {
 // Post Featured Job
 exports.PostFeaturedJobs = async (req, res) => {
 	const featured = req.body;
-	const jobId = {jobId:ObjectId(req.body.jobId)}
+	const jobId = { jobId: ObjectId(req.body.jobId) }
 	console.log(jobId)
 	const result = await featuredJobCollection.insertOne(jobId);
 	res.send(result);
@@ -314,9 +315,18 @@ exports.deleteJobByAdmin = (req, res) => {
 		.then(async (isUserAdmin) => {
 			if (isUserAdmin) {
 				const result = await jobsCollection.deleteOne({ _id: ObjectId(jobId) })
-				if (result.acknowledged) res.json({acknowledged: true})
+				if (result.acknowledged) res.json({ acknowledged: true })
 			} else {
 				res.sendStatus(401)
 			}
 		})
+}
+
+exports.setMeeting = async (req, res) => {
+	const companyId = ObjectId(req.decoded)
+	const candidateId = ObjectId(req.body.candidateId)
+	const meetingLink = uuidv4()
+	const meeting = { companyId, candidateId, meetingTime: req.body.meetingTime, meetingLink }
+	const result = await meetingsCollection.insertOne(meeting)
+	res.send(result)
 }

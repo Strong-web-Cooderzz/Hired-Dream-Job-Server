@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getAllJobs, getJobByEmail, getJobsById, postJob, updateJob, deleteJob, searchJobs, updateJobVisibility, myAppliedJobs, getFeaturedJobs, jobCounter, jobCounterByCategory, PostFeaturedJobs, featuredJob, deleteFeaturedJob,jobCounterByCities, getAllJobsByType, deleteJobByAdmin } = require('../controllers/jobs.controller');
+const { getAllJobs, getJobByEmail, getJobsById, postJob, updateJob, deleteJob, searchJobs, updateJobVisibility, myAppliedJobs, getFeaturedJobs, jobCounter, jobCounterByCategory, PostFeaturedJobs, featuredJob, deleteFeaturedJob,jobCounterByCities, getAllJobsByType, deleteJobByAdmin, setMeeting } = require('../controllers/jobs.controller');
 const verifyJWT = require('../middlewares/verifyJWT');
 
 // get all jobs by type
@@ -54,5 +54,7 @@ router.delete('/delete-job', verifyJWT, deleteJobByAdmin)
 
 // my all job applied post
 router.get("/job-applied-post/:id", myAppliedJobs);
+
+router.post("/add-meeting", verifyJWT, setMeeting)
 
 module.exports = router;

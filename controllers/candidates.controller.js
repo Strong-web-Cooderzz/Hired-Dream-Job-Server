@@ -95,8 +95,23 @@ exports.applyToJob = async (req, res) => {
 };
 
 exports.getAppliedCandidateByEmail = async (req, res) => {
-	const id = req.decoded;
+	const id = req.params.email;
 	const query = { companyId:ObjectId(id)}
-	const appliedCandidate = await applyJobCollection.find(query).toArray()
+	const appliedCandidate = await applyJobCollection.aggregate([
+		{
+			$match: query
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'candidateId',
+				foreignField: '_id',
+				as: 'user'
+			}
+		},
+		{
+			$unwind: '$user'
+		}
+	]).toArray()
 	res.send(appliedCandidate)
 }

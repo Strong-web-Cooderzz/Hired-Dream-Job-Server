@@ -21,5 +21,6 @@ const postsCollection = client.db("hired-job").collection("blogPosts");
 const commentsCollection = client.db('hired-job').collection('comments')
 const likesCollection = database.collection('likes')
 const notificationsCollection = database.collection('notifications')
+const meetingsCollection = database.collection('meetings')
 
-module.exports = { jobsCollection, ObjectId, categoriesCollection, tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection, commentsCollection, likesCollection, notificationsCollection,stripe };
+module.exports = { jobsCollection, ObjectId, categoriesCollection, tagsCollection, usersCollection, applyJobCollection, postsCollection, featuredJobCollection, commentsCollection, likesCollection, notificationsCollection, stripe, meetingsCollection };
