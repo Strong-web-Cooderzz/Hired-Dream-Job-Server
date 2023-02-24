@@ -37,31 +37,31 @@ exports.getUserByType = async (req, res) => {
 exports.updateUser = async (req, res) => {
 	const id = req.decoded;
 	const userData = req.body;
-	console.log(id,userData)
-	
-		// user can not change their email
-		delete userData["email"];
-		userData.ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-		const filter = { _id: ObjectId(id) };
-		const option = { upsert: true };
-		const updateUser = {
-			$set: userData,
-		};
-		const result = await usersCollection.updateOne(filter, updateUser, option);
-		// console.log(result)
-		if (result.acknowledged) {
-			getAuth(adminApp)
-				.updateUser(id, {
-					displayName: userData.fullName,
-					// phoneNumber: userData.phoneNumber,
-					// photoURL: 'userData.photo',
-				})
-				.then((userRecord) => {
-					res.send(result);
-				})
-				.catch((err) => console.log(err));
-		}
-	
+	console.log(id, userData)
+
+	// user can not change their email
+	delete userData["email"];
+	userData.ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+	const filter = { _id: ObjectId(id) };
+	// const option = { upsert: true };
+	const updateUser = {
+		$set: userData,
+	};
+	const result = await usersCollection.updateOne(filter, updateUser, option);
+	// console.log(result)
+	if (result.acknowledged) {
+		getAuth(adminApp)
+			.updateUser(id, {
+				displayName: userData.fullName,
+				// phoneNumber: userData.phoneNumber,
+				// photoURL: 'userData.photo',
+			})
+			.then((userRecord) => {
+				res.send(result);
+			})
+			.catch((err) => console.log(err));
+	}
+
 };
 
 exports.registerUser = async (req, res) => {
@@ -122,7 +122,7 @@ exports.registerUser = async (req, res) => {
 									})
 									.catch(async (err) => {
 										console.log(err)
-										await usersCollection.deleteOne({_id: ObjectId(result.insertedId)})
+										await usersCollection.deleteOne({ _id: ObjectId(result.insertedId) })
 										res.send(err)
 									});
 							})
