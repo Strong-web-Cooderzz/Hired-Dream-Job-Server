@@ -326,7 +326,42 @@ exports.setMeeting = async (req, res) => {
 	const companyId = ObjectId(req.decoded)
 	const candidateId = ObjectId(req.body.candidateId)
 	const meetingLink = uuidv4()
-	const meeting = { companyId, candidateId, meetingTime: req.body.meetingTime, meetingLink }
+	const jobId = ObjectId(req.body.jobId)
+	const meeting = { companyId, candidateId, meetingTime: req.body.meetingTime, meetingLink, jobId }
 	const result = await meetingsCollection.insertOne(meeting)
+	res.send(result)
+}
+
+exports.getMeetings = async (req, res) => {
+	const id = req.decoded
+	const result = await meetingsCollection.aggregate([
+		{
+			$match: {candidateId: ObjectId(id)}
+		},
+		{
+			$lookup: {
+				from: 'users',
+				localField: 'companyId',
+				foreignField: '_id',
+				as: 'company',
+				pipeline: [
+					{
+						$lookup: {
+							from: 'jobs',
+							localField: '_id',
+							foreignField: 'companyId',
+							as: 'job'
+						}
+					},
+					{
+						$unwind: '$job'
+					}
+				]
+			}
+		},
+		{
+			$unwind: '$company'
+		}
+	]).toArray()
 	res.send(result)
 }
