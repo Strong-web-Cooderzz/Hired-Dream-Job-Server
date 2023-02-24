@@ -53,7 +53,7 @@ exports.updateUser = async (req, res) => {
 				.updateUser(id, {
 					displayName: userData.fullName,
 					// phoneNumber: userData.phoneNumber,
-					photoURL: 'userData.photo',
+					// photoURL: 'userData.photo',
 				})
 				.then((userRecord) => {
 					res.send(result);

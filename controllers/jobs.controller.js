@@ -80,19 +80,18 @@ exports.featuredJob = async (req, res) => {
 	const result = await featuredJobCollection.aggregate([
 		{
 			$match: {
-				_id: ObjectId(id)
+				jobId: ObjectId(id)
 			}
 		},
 		{
 			$lookup: {
-				from: 'featuredJob',
+				from: 'jobs',
 				localField: 'jobId',
 				foreignField: '_id',
 				as: 'job'
 			}
 		}
 	]).toArray()
-	console.log(result)
 	res.send(result);
 };
 
