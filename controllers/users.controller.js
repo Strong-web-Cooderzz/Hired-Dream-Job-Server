@@ -61,7 +61,6 @@ exports.updateUser = async (req, res) => {
 			})
 			.catch((err) => console.log(err));
 	}
-
 };
 
 exports.registerUser = async (req, res) => {
