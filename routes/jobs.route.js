@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getAllJobs, getJobByEmail, getJobsById, postJob, updateJob, deleteJob, searchJobs, updateJobVisibility, myAppliedJobs, getFeaturedJobs, jobCounter, jobCounterByCategory, PostFeaturedJobs, featuredJob, deleteFeaturedJob,jobCounterByCities, getAllJobsByType, deleteJobByAdmin, setMeeting, getMeetings } = require('../controllers/jobs.controller');
+const { getAllJobs, getJobByEmail, getJobsById, postJob, updateJob, deleteJob, searchJobs, updateJobVisibility, myAppliedJobs, getFeaturedJobs, jobCounter, jobCounterByCategory, PostFeaturedJobs, featuredJob, deleteFeaturedJob,jobCounterByCities, getAllJobsByType, deleteJobByAdmin, setMeeting, getMeetings, employerMeetings } = require('../controllers/jobs.controller');
 const verifyJWT = require('../middlewares/verifyJWT');
 
 // get all jobs by type
