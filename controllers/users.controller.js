@@ -125,7 +125,7 @@ exports.registerUser = async (req, res) => {
 										res.send(err)
 									});
 							})
-							.catch((err) => res.json('Account exists'));
+							.catch((err) => res.json({ msg: "account-exists" }));
 					}
 				});
 		}
